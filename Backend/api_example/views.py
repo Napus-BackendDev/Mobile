@@ -7,8 +7,8 @@ import pyrebase
 import json
 
 import os
-firebase_key = os.environ("KEY")
-Config = os.environ("CONFIG")
+firebase_key = os.environ["KEY"]
+Config = os.environ["CONFIG"]
 
 cred = credentials.Certificate("firebase_key")
 firebase_admin.initialize_app(cred)
