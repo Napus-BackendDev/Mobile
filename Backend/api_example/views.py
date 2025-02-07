@@ -6,7 +6,7 @@ from firebase_admin import credentials
 import pyrebase
 import json
 
-cred = credentials.Certificate("D:/MobileApp/Django/mybackend/Data_key/key.json")
+cred = credentials.Certificate("Data_key/key.json")
 firebase_admin.initialize_app(cred)
 
 config = {
