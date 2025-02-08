@@ -1,0 +1,9 @@
+on:
+  pull_request:
+    branches:
+    - main
+job:
+  build:
+    step:
+      -name: Set_API_Firebase
+       url: 
