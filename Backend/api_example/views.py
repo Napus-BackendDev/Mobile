@@ -7,13 +7,13 @@ import pyrebase
 import json
 
 import os
-firebase_key = os.environ["KEY"]
-Config = os.environ["CONFIG"]
+api_key = os.getenv("API_DATABASE")
+config = os.getenv("CONFIG")
 
-cred = credentials.Certificate("firebase_key")
+cred = credentials.Certificate(api_key)
 firebase_admin.initialize_app(cred)
 
-firebase = pyrebase.initialize_app(Config)
+firebase = pyrebase.initialize_app(config)
 auth_pyrebase = firebase.auth()
 
 @api_view(['Post'])

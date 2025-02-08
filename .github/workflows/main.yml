@@ -13,5 +13,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set API Firebase Environment Variable
-        run: echo "API_DATABASE=${{ secrets.API_DATABASE }}" >> $GITHUB_ENV
+      - name: Set Firebase API Environment Variables
+        run: |
+          echo "API_DATABASE=${{ secrets.API_DATABASE }}" >> $GITHUB_ENV
+          echo "CONFIG=${{ secrets.API_DATABASE_CONFIG }}" >> $GITHUB_ENV
+
+      - name: Verify Environment Variables
+        run: |
+          echo "Firebase API Key and Config are set."
