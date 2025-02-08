@@ -4,13 +4,16 @@ from rest_framework.response import Response
 import firebase_admin
 from firebase_admin import credentials
 import pyrebase
+import base64
 import json
 
 import os
 api_key = os.getenv("API_DATABASE")
 config = os.getenv("API_DATABASE_CONFIG")
 
-cred = credentials.Certificate(api_key)
+api_key_json = json.loads(base64.b64decode(api_key))
+
+cred = credentials.Certificate(api_key_json)
 firebase_admin.initialize_app(cred)
 
 firebase = pyrebase.initialize_app(config)
