@@ -1,9 +1,17 @@
+name: Firebase API Secret
+
 on:
   pull_request:
     branches:
-    - main
-job:
+      - main
+
+jobs:
   build:
-    step:
-      -name: Set_API_Firebase
-       url: 
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set API Firebase Environment Variable
+        run: echo "API_DATABASE=${{ secrets.API_DATABASE }}" >> $GITHUB_ENV
