@@ -15,9 +15,16 @@ jobs:
 
       - name: Set Firebase API Environment Variables
         run: |
-          echo "API_DATABASE=${{ secrets.API_DATABASE }}" >> $GITHUB_ENV
-          echo "CONFIG=${{ secrets.API_DATABASE_CONFIG }}" >> $GITHUB_ENV
+          echo "${{ secrets.API_DATABASE }}" > firebase-key.json
+          echo "${{ secrets.API_DATABASE_CONFIG }}" >> config.json
 
       - name: Verify Environment Variables
         run: |
           echo "Firebase API Key and Config are set."
+      - name: Run Django
+        run: python manage.py runserver
+        env:
+          API_DATABASE: firebase-key.json
+          API_DATABASE_CONFIG: config.json
+
+        

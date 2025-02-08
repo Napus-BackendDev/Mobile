@@ -8,7 +8,7 @@ import json
 
 import os
 api_key = os.getenv("API_DATABASE")
-config = os.getenv("CONFIG")
+config = os.getenv("API_DATABASE_CONFIG")
 
 cred = credentials.Certificate(api_key)
 firebase_admin.initialize_app(cred)
