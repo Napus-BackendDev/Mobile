@@ -1,28 +1,31 @@
 # Manual For Developer
 ## Front-end
-Install dart extention
+Packages have to install
 
-Please read lib/screens/example.dart for write api
+cd Frontend
+
+npm install expo
+npm install @react-navigation/native
+npm install @react-navigation/stack
+npm install react-native-screens react-native-safe-area-context
+npm install expo-linear-gradient
+npm install expo-font
+npm install react-native
 
 ## Back-end
-Install python extention
-
-If want to run code, 'cd Mobile_App', 'cd Backend', then type 'python manage.py runserver'
-
-If want to create app type 'python manage.py runserver'
 
 
 
 # Mobile App
-Name : Quick Fix
+Name :
 
-Description : QuickFix is an on-demand home repair and maintenance services app designed to make home care effortless. Whether you need plumbing, electrical repairs, appliance fixes, or general maintenance, QuickFix connects you with trusted professionals in your area.
+Description :
 
-Target User : Everyone
+Target User :
 
-Tech Stack : Flutter + Django + Firebase 
+Tech Stack :
 
-Monetization : Hire Share Per Job
+Monetization : 
 
 # Group Member
 6631503003 - Guan Jie Khamchan [ Front-End Developer ]
