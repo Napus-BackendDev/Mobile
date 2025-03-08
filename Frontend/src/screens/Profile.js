@@ -13,7 +13,7 @@ export default function Profile() {
       <View style={ styles.header }>
         <TouchableOpacity style={{paddingLeft: 20}}>
           <Image
-            source={require('./assets/img/Arrow.png')}
+            source={require('../../assets/img/Arrow.png')}
             style={{ width: 23.03, height: 14 }}
           />
         </TouchableOpacity>
@@ -23,7 +23,7 @@ export default function Profile() {
       {/* Add the profile */}
       <View style={styles.profile}>
 
-        <Image source={require('./assets/img/Card.png')} 
+        <Image source={require('../../assets/img/Card.png')} 
         style={{ top: '10%'}}
         />
 
