@@ -181,7 +181,6 @@ const styles = StyleSheet.create({
     cardContainer: {
         flexWrap: "wrap",
         width: "1000%",
-        borderWidth: 10,
     },
 
     cardItem: {
