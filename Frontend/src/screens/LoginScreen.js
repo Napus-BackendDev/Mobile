@@ -110,7 +110,7 @@ export default function LoginScreen() {
           <Text style={styles.loginforgot}>FORGOT PASSWORD</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.login} onPress={handleLogin}>
+        <TouchableOpacity style={styles.login} onPress={navigation.navigate('ProfileLogIned')}>
           <Text style={styles.loginbuttonText}>LOG IN</Text>
         </TouchableOpacity>
 

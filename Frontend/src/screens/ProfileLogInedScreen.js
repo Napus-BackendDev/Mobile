@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View ,Image ,TouchableOpacity} from 'react-native';
 import { useFonts } from "expo-font";
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, Firestore, getDoc , doc } from 'firebase/firestore';
 import { db , getStorage , ref , getDownloadURL } from '../../FireBaseConfig';
 import { useEffect, useState } from 'react';
 
@@ -15,15 +15,41 @@ export default function ProfileLogInedScreen({ navigation }) {
 
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchName = async () => {
       try {
-        const url = await getDownloadURL(ref(storage, "User_Picture/pic.jpg")); // ดึงข้อมูลจาก Firestore
+        const userdoc = doc(db, "User", "Test");
+        const userSnap = await getDoc(userdoc);
+        
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          setname(userData.Name);
+          setemail(userData.Email);
+          
+          if (userData.User_Picture) {
+            fetchImages(userData.User_Picture);
+          } else {
+            console.warn("No image found");
+          }
+        } else {
+          console.warn("No such document!");
+        }
+      }
+      catch (error) {
+        console.error("Error Fetching Name: ", error);
+      };}
+
+    const fetchImages = async (Picture) => {
+      try {
+        const url = await getDownloadURL(ref(storage, Picture)); // ดึงข้อมูลจาก Firestore
         setImage(url); // บันทึกลิงก์รูปที่ดึงมา
       } catch (error) {
         console.error("Error Fetching images: ", error);
       }
     };
+
+    fetchName();
     fetchImages();
+
   }, []);
 
   const [fontsLoaded] = useFonts({
@@ -56,7 +82,7 @@ export default function ProfileLogInedScreen({ navigation }) {
 
         {/* Profile Name */}
         <View style={{ alignItems: 'center', flexDirection: 'row', top: '5.5%' }}>
-          <Text style={{fontSize: 14 , color: "#FF676F" , fontWeight: 600}}>Napus Samuanpho</Text>
+          <Text style={{fontSize: 14 , color: "#FF676F" , fontWeight: 600}}>{name}</Text>
           <TouchableOpacity>
             <Image source={require('../../assets/img/Profile_icon/Edit.png')}
             style={{ width: 12, height: 12, marginLeft: 5 }}
@@ -66,7 +92,7 @@ export default function ProfileLogInedScreen({ navigation }) {
 
         {/* Profile Email */}
         <View style={{ alignItems: 'center', flexDirection: 'row', top: '7%' }}>
-          <Text style={{fontSize: 12 , color: "black" , fontWeight: 400}}>Napus.sam@gmail.com</Text>
+          <Text style={{fontSize: 12 , color: "black" , fontWeight: 400}}>{email}</Text>
           <TouchableOpacity>
             <Image source={require('../../assets/img/Profile_icon/EditEmail.png')}
             style={{ width: 10, height: 10, marginLeft: 5 }}
