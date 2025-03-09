@@ -124,7 +124,13 @@ export default function DailyScreen({ navigation }) {
                     >
                         <Image source={{ uri: confirm ? backCard : imageUrl }} style={styles.Card1}/>
                     </LinearGradient>
-                    confirm ? <View></View> : ''
+                    {
+                        confirm ? 
+                            <View style={{ height: 60, backgroundColor: '#100C1A' }}>
+
+                            </View> 
+                        : ''
+                    }
                 </View>
 
                 {/*Footer*/}
@@ -141,7 +147,7 @@ export default function DailyScreen({ navigation }) {
                                 end={{ x: 0.0, y: 1.0 }}
                                 style={styles.button}
                             >
-                                <Text style={styles.buttonText} onPress={() => setConfirm(true)}></Text>
+                                <Text style={styles.buttonText} onPress={() => {confirm ? navigation.navigate('Home') : setConfirm(true)}}>{confirm ? 'BACK' : 'CONFIRM'}</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>

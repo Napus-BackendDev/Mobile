@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     position: 'absolute',
+    marginTop: -4,
     zIndex: 1,
   },
   logintitle: {
