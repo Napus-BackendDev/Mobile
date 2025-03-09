@@ -94,15 +94,15 @@ export default function ProfileLogInedScreen({ navigation }) {
 
         {/* Profile Buttons */}
         <View style={{alignItems: 'center', width: 230, marginTop: 15 , height: 180}}>
-          <TouchableOpacity style={styles.Button}>
+          <TouchableOpacity style={[styles.Button, styles.shadow]}>
             <Image source={require('../../assets/img/Profile_icon/History.png')} style={{width:16,height:16}}/>
             <Text style={styles.Button_Text}>PURCHASE HISTORY</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.Button}>
+          <TouchableOpacity style={[styles.Button, styles.shadow]}>
             <Image source={require('../../assets/img/Profile_icon/Q.png')} style={{width:10,height:16}}/>
             <Text style={{paddingLeft: 28 ,color: 'black', textAlign: 'center' , fontWeight: 500 , fontSize: 12}}>HELP & SUPPORT</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.Button}>
+          <TouchableOpacity style={[styles.Button, styles.shadow]}>
             <Image source={require('../../assets/img/Profile_icon/Out.png')} style={{width:16,height:14}}/>
             <Text style={styles.Button_Text}>LOG OUT</Text>
           </TouchableOpacity>
@@ -179,5 +179,11 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     fontSize: 12,
     fontFamily: 'JosefinSans',
+  },
+  shadow: {
+    shadowColor: "#3E485A",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
