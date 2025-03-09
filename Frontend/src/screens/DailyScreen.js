@@ -2,7 +2,7 @@ import { View, StyleSheet, Image, Text, ImageBackground, TouchableOpacity, Scrol
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
-import { getStorage, ref, getDownloadURL } from "../../firebaseConfig";
+import { getStorage, ref, getDownloadURL } from "../../FireBaseConfig";
 
 export default function DailyScreen({ navigation }) {
     const [fontsLoaded] = useFonts({

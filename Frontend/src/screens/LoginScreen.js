@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
+import { auth  } from '../../FireBaseConfig';
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -19,9 +21,16 @@ export default function LoginScreen({ navigation }) {
 
   }
   const handleLogin = async () => {
-    const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//correct email pattern
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;//password validation
+    try {
+      await signInWithEmailAndPassword(auth, gmail, password);
+      Alert.alert('Success', 'Login successful!');
+      navigation.navigate("ProfileLogIned");
+    } catch (error) {
+      console.log(error);
+    }
+
+    
+
        // Check if any field is empty
     if (!username || !gmail || !password) {
       Alert.alert('Invalid Input', 'Please fill all fields');
