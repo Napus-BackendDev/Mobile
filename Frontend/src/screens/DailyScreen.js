@@ -15,16 +15,18 @@ export default function DailyScreen({ navigation }) {
 
     const [tarotName, setTarotName] = useState('');
     const [tarotDesc, setTarotDesc] = useState('');
-    
+
     const [chooseCard, setChooseCard] = useState(false);
     const [confirm, setConfirm] = useState(false);
+
+    const [selectedCard, setSelectedCard] = useState(null);
 
     useEffect(() => {
         const fetchImage = async () => {
             try {
                 const storage = getStorage();
-                
-                const imageRef = ref(storage, "Back_Card.png"); 
+
+                const imageRef = ref(storage, "Back_Card.png");
                 const imgUrl = await getDownloadURL(imageRef);
                 setImageUrl(imgUrl);
 
@@ -33,14 +35,14 @@ export default function DailyScreen({ navigation }) {
                 setBackCard(backUrl);
             } catch (error) {
                 console.log("Error fetching image:", error);
-            } 
+            }
         };
         fetchImage();
 
         const fetchData = async () => {
             try {
-                const userDoc = await getDoc(doc(db, "Cards", "Card 12")); 
-          
+                const userDoc = await getDoc(doc(db, "Cards", "Card 12"));
+
                 if (userDoc.exists()) {
                     setTarotName(userDoc.data().Name);
                     setTarotDesc(userDoc.data().Desc_Eng);
@@ -54,12 +56,21 @@ export default function DailyScreen({ navigation }) {
         fetchData();
     }, []);
 
-    const cards = Array.from({ length: 78 });
+    const cards = Array.from({ length: 78 }, (_, index) => ({
+        id: index + 1,
+        title: `The Fool ${index + 1}`,
+        description: `Description for Card ${index + 1}`,
+        image: <Image
+            source={require("../../assets/img/TheFool.png")}
+            style={styles.image}></Image>
+    }));
 
     const handleCardSelect = (cardIndex) => {
-        // console.log(`Card ${cardIndex + 1} selected`);
+        const selected = cards[cardIndex];
+        setSelectedCard(selected);
         setChooseCard(true);
     };
+
 
     return (
         <ScrollView style={{ height: "100vh", overflowY: "scroll", }}>
@@ -133,25 +144,23 @@ export default function DailyScreen({ navigation }) {
                 </View>
 
                 {/*ShowCard*/}
-                <View style={[styles.ShowCard, {height: confirm ? 751 : 452,}]}>
-                    <Image source={{ uri: chooseCard ? (confirm ? backCard : imageUrl) : '' }} style={styles.Card1}/>
-                    {
-                        confirm ? 
-                            <View style={styles.tarotInfo}>
-                                <View style={styles.nameContainer}>
-                                    <Text style={styles.tarotName}>{tarotName}</Text>
-                                </View>
-                                <LinearGradient
-                                    colors={['#473366', '#9A8EB4']}
-                                    style={styles.descContainer}
-                                >
-                                    <Text style={styles.tarotDesc}>{tarotDesc}</Text>
-                                </LinearGradient>
+                <View style={[styles.ShowCard, { height: confirm ? 751 : 452 }]}>
+                    <Image
+                        source={{ uri: chooseCard ? (confirm ? selectedCard.image : imageUrl) : '' }}
+                        style={styles.Card1}
+                    />
+                    {confirm && selectedCard && (
+                        <View style={styles.tarotInfo}>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.tarotName}>{selectedCard.title}</Text>
                             </View>
-                        : 
-                            ''
-                    }
+                            <LinearGradient colors={['#473366', '#9A8EB4']} style={styles.descContainer}>
+                                <Text style={styles.tarotDesc}>{selectedCard.description}</Text>
+                            </LinearGradient>
+                        </View>
+                    )}
                 </View>
+
 
                 {/*Footer*/}
                 <LinearGradient
@@ -167,9 +176,23 @@ export default function DailyScreen({ navigation }) {
                                 end={{ x: 0.0, y: 1.0 }}
                                 style={styles.button}
                             >
-                                <Text style={styles.buttonText} onPress={() => {chooseCard ? (confirm ? navigation.navigate('Home') : setConfirm(true)) : ''}}>{confirm ? 'BACK' : 'CONFIRM'}</Text>
+                                <Text
+                                    style={styles.buttonText}
+                                    onPress={() => {
+                                        if (chooseCard) {
+                                            if (confirm) {
+                                                navigation.navigate('Home');
+                                            } else {
+                                                setConfirm(true);
+                                            }
+                                        }
+                                    }}
+                                >
+                                    {confirm ? 'BACK' : 'CONFIRM'}
+                                </Text>
                             </LinearGradient>
                         </TouchableOpacity>
+
                     </View>
                 </LinearGradient>
             </LinearGradient>
@@ -288,13 +311,13 @@ const styles = StyleSheet.create({
     },
 
     tarotInfo: {
-        width: '100%', 
+        width: '100%',
         height: 300,
     },
 
     nameContainer: {
-        width: '100%', 
-        height: 60, 
+        width: '100%',
+        height: 60,
         backgroundColor: '#100C1A',
         marginTop: 35,
         justifyContent: 'center',
@@ -308,7 +331,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textTransform: 'uppercase',
     },
-    
+
     descContainer: {
         width: '100%',
         height: 240,
@@ -316,7 +339,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 30,
     },
-    
+
     tarotDesc: {
         fontFamily: 'JosefinSans',
         fontSize: 14,
@@ -341,7 +364,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 27,
     },
-    
+
     buttonText: {
         fontFamily: "JosefinSans",
         fontSize: 15,
