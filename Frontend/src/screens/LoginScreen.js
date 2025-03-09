@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
-import { auth  } from '../../FireBaseConfig';
+import { auth  } from '../../firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
@@ -22,7 +22,7 @@ export default function LoginScreen({ navigation }) {
   }
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, gmail, password);
+      // await signInWithEmailAndPassword(auth, gmail, password);
       Alert.alert('Success', 'Login successful!');
       navigation.navigate("ProfileLogIned");
     } catch (error) {

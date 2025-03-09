@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View ,Image ,TouchableOpacity} from 'react-native';
 import { useFonts } from "expo-font";
 import { collection, getDocs } from 'firebase/firestore';
-import { db , getStorage , ref , getDownloadURL } from '../../FireBaseConfig';
+import { db , getStorage , ref , getDownloadURL } from '../../firebaseConfig';
 import { useEffect, useState } from 'react';
 
 export default function ProfileLogInedScreen({ navigation }) {
