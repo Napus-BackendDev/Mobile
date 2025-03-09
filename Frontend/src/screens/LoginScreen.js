@@ -85,7 +85,7 @@ export default function LoginScreen() {
     end={{ x: 1, y: 1 }}
     style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Profile")}>
           <Ionicons name="arrow-back" size={30} color={"black"} style={styles.backButton} />
         </TouchableOpacity>
 
