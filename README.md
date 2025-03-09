@@ -4,6 +4,7 @@ Packages have to install
 
 cd Frontend
 
+npx expo install react-dom react-native-web @expo/metro-runtime
 npm install expo
 npm install @react-navigation/native
 npm install @react-navigation/stack

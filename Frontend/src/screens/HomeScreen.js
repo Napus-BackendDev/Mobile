@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
 
             {/* Navigation Tab */}
             <View style={ styles.navigation }>
-                <TouchableOpacity style={ component.navigator }>PROFILE</TouchableOpacity>
+                <TouchableOpacity style={ component.navigator } onPress={() => navigation.navigate('Profile')}>PROFILE</TouchableOpacity>
                 <View style={ component.line }/>
                 <TouchableOpacity style={ component.navigator }>STORE</TouchableOpacity>
             </View>
@@ -122,7 +122,7 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 <View style={ part.category }>
                     <View style={ part.categoryButton }>
-                        <TouchableOpacity >
+                        <TouchableOpacity onPress={() => navigation.navigate('Daily')}>
                             <LinearGradient
                                 colors={['#FFB6C2', '#FFDFA3']}
                                 start={{ x: 1, y: 0 }}

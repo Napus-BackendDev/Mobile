@@ -1,7 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Linking, StyleSheet, Text, View , TouchableOpacity , Image} from 'react-native';
+import { useFonts } from "expo-font";
 
-export default function Profile() {
+export default function ProfileScreen({ navigation }) {
+  const [fontsLoaded] = useFonts({
+      'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
+  });
+
   return (
     <LinearGradient
       colors={['#EFB6C8', '#8B87CC', '#EFB6C8']}
@@ -11,7 +16,7 @@ export default function Profile() {
     >
       {/* Add the header */}
       <View style={ styles.header }>
-        <TouchableOpacity style={{paddingLeft: 20}}>
+        <TouchableOpacity style={{paddingLeft: 20}} onPress={() => navigation.navigate('Home')}>
           <Image
             source={require('../../assets/img/Arrow.png')}
             style={{ width: 23.03, height: 14 }}
@@ -48,6 +53,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     overflow: 'hidden',
+    fontFamily: 'JosefinSans',
   },
   header: {
     flexDirection: 'row',

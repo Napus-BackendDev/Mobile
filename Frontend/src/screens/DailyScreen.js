@@ -1,23 +1,13 @@
-import {
-    View,
-    StyleSheet,
-    Image,
-    Text,
-    ImageBackground,
-    TouchableOpacity,
-    ScrollView,
-} from "react-native";
+import { View, StyleSheet, Image, Text, ImageBackground, TouchableOpacity, ScrollView, } from "react-native";
 import { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
 
-export default function Daily() {
-    const navigation = useNavigation();
+export default function DailyScreen({ navigation }) {
+    const [fontsLoaded] = useFonts({
+        'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
+    });
 
-    {
-        /* Hide IOS Header */
-    }
     useEffect(() => {
         navigation.setOptions({ headerShown: false });
     }, [navigation]);
@@ -45,7 +35,7 @@ export default function Daily() {
                         style={styles.image}
                     >
                         <View style={styles.DailyCon}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                                 <Image
                                     source={require("../../assets/img/angle-left-solid 1.png")}
                                     style={styles.angle}
@@ -110,7 +100,6 @@ export default function Daily() {
                         style={{
                             color: "#000",
                             fontSize: 20,
-                            fontFamily: "Josefin Sans",
                             fontWeight: 700,
                         }}
                     >
@@ -144,7 +133,7 @@ export default function Daily() {
                                 end={{ x: 0.0, y: 1.0 }}
                                 style={styles.button}
                             >
-                                <Text style={styles.buttonText}>Go Back</Text>
+                                <Text style={styles.buttonText}>GO BACK</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -159,6 +148,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: 402,
         height: 1771,
+        fontFamily: 'JosefinSans',
     },
 
     image: {
@@ -198,7 +188,6 @@ const styles = StyleSheet.create({
     },
 
     Daily: {
-        fontFamily: "Josefin Sans",
         fontSize: 40,
         fontWeight: "bold",
         color: "#ffffff",
@@ -215,7 +204,6 @@ const styles = StyleSheet.create({
     },
 
     verseText: {
-        fontFamily: "Lora",
         fontSize: 10,
         textAlign: "center",
         color: "#ffffff",
@@ -234,7 +222,6 @@ const styles = StyleSheet.create({
     },
 
     ReamaningText: {
-        fontFamily: "Josefin Sans",
         fontSize: 20,
         fontWeight: 700,
         color: "#fff",
@@ -249,6 +236,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        fontFamily: 'JosefinSans',
     },
 
     ShowCard: {
@@ -280,9 +268,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 27,
     },
-
+    
     buttonText: {
-        fontFamily: "Josefin Sans",
+        fontFamily: "JosefinSans",
         fontSize: 15,
         fontWeight: 700,
         color: "#fff",
