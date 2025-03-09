@@ -35,10 +35,10 @@ export default function ProfileScreen({ navigation }) {
         <Text style={ styles.text }> NOT REGISTERED YET? </Text>
         
         <View style={styles.buttons}>
-          <TouchableOpacity style={styles.buttons_Login}>
+          <TouchableOpacity style={styles.buttons_Login} onPress={() => navigation.navigate('Login')}>
             <Text style={{ color: 'white', textAlign: 'center' , fontWeight: 600 }}>LOG IN</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttons_Signup}>
+          <TouchableOpacity style={styles.buttons_Signup} onPress={() => navigation.navigate('Signup')}>
             <Text style={{ color: '#FF7575', textAlign: 'center' , fontWeight: 600}}>SIGN UP</Text>
           </TouchableOpacity>
         </View>

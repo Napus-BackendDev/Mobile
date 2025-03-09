@@ -2,7 +2,7 @@ import { View, StyleSheet, Image, Text, ImageBackground, TouchableOpacity, Scrol
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
-import { getStorage, ref, getDownloadURL } from "../../firebaseConfig";
+import { getStorage, ref, getDownloadURL } from "../../FireBaseConfig";
 
 export default function DailyScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -10,15 +10,23 @@ export default function DailyScreen({ navigation }) {
     });
 
     const [imageUrl, setImageUrl] = useState(null);
+    const [backCard, setBackCard] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const [confirm, setConfirm] = useState(false);
 
     useEffect(() => {
         const fetchImage = async () => {
             try {
                 const storage = getStorage();
+                
                 const imageRef = ref(storage, "Back_Card.png"); 
-                const url = await getDownloadURL(imageRef);
-                setImageUrl(url);
+                const imgUrl = await getDownloadURL(imageRef);
+                setImageUrl(imgUrl);
+
+                const backRef = ref(storage, "Arcana/Justice.png");
+                const backUrl = await getDownloadURL(backRef)
+                setBackCard(backUrl);
             } catch (error) {
                 console.log("Error fetching image:", error);
             } finally {
@@ -31,10 +39,8 @@ export default function DailyScreen({ navigation }) {
 
     const cards = Array.from({ length: 78 });
 
-    // ฟังก์ชันสำหรับเมื่อคลิกการ์ด
     const handleCardSelect = (cardIndex) => {
         console.log(`Card ${cardIndex + 1} selected`);
-        // คุณสามารถเพิ่มฟังก์ชันที่คุณต้องการ เช่น การแสดงรายละเอียดของการ์ด
     };
 
     return (
@@ -116,7 +122,7 @@ export default function DailyScreen({ navigation }) {
                         end={{ x: 0.0, y: 1.0 }}
                         style={{ height: 380, marginTop: 40, borderRadius: 6 }}
                     >
-                        <Image source={{ uri: imageUrl }} style={styles.Card1}/>
+                        <Image source={{ uri: confirm ? backCard : imageUrl }} style={styles.Card1}/>
                     </LinearGradient>
                 </View>
 
@@ -134,7 +140,7 @@ export default function DailyScreen({ navigation }) {
                                 end={{ x: 0.0, y: 1.0 }}
                                 style={styles.button}
                             >
-                                <Text style={styles.buttonText}>CONFIRM</Text>
+                                <Text style={styles.buttonText} onPress={() => setConfirm(true)}></Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -147,6 +153,8 @@ export default function DailyScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: 402,
+        height: 1771,
         fontFamily: 'JosefinSans',
     },
 
@@ -240,7 +248,7 @@ const styles = StyleSheet.create({
 
     ShowCard: {
         width: '100%',
-        height: '100%',
+        height: 637,
         flexDirection: "row",
         justifyContent: "center",
     },
