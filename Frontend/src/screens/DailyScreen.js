@@ -1,16 +1,33 @@
 import { View, StyleSheet, Image, Text, ImageBackground, TouchableOpacity, ScrollView, } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
+import { getStorage, ref, getDownloadURL } from "../../firebaseConfig";
 
 export default function DailyScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
         'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
     });
 
+    const [imageUrl, setImageUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        navigation.setOptions({ headerShown: false });
-    }, [navigation]);
+        const fetchImage = async () => {
+            try {
+                const storage = getStorage();
+                const imageRef = ref(storage, "Back_Card.png"); 
+                const url = await getDownloadURL(imageRef);
+                setImageUrl(url);
+            } catch (error) {
+                console.log("Error fetching image:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImage();
+    }, []);
 
     const cards = Array.from({ length: 78 });
 
@@ -45,22 +62,6 @@ export default function DailyScreen({ navigation }) {
                         </View>
                     </ImageBackground>
                 </View>
-
-                {/*verse*/}
-                <LinearGradient
-                    colors={["#100C1A", "#0E0C19"]}
-                    start={{ x: 0.0, y: 0.0 }}
-                    end={{ x: 0.0, y: 1.0 }}
-                >
-                    <View style={styles.verse}>
-                        <Text style={styles.verseText}>
-                            The universe has a message for you! Pick a tarot card to reveal
-                            today’s guidance. Gain insight into your energy, emotions, and
-                            opportunities. Trust your intuition and let the cards lead the
-                            way.
-                        </Text>
-                    </View>
-                </LinearGradient>
 
                 {/*Card*/}
                 {/* Horizontal Scroll for Cards */}
@@ -115,7 +116,7 @@ export default function DailyScreen({ navigation }) {
                         end={{ x: 0.0, y: 1.0 }}
                         style={{ height: 380, marginTop: 40, borderRadius: 6 }}
                     >
-                        <View style={styles.Card1}></View>
+                        <Image source={{ uri: imageUrl }} style={styles.Card1}/>
                     </LinearGradient>
                 </View>
 
@@ -133,7 +134,7 @@ export default function DailyScreen({ navigation }) {
                                 end={{ x: 0.0, y: 1.0 }}
                                 style={styles.button}
                             >
-                                <Text style={styles.buttonText}>GO BACK</Text>
+                                <Text style={styles.buttonText}>CONFIRM</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -146,8 +147,6 @@ export default function DailyScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: 402,
-        height: 1771,
         fontFamily: 'JosefinSans',
     },
 
@@ -219,14 +218,14 @@ const styles = StyleSheet.create({
     Reamaning: {
         width: 402,
         height: 139,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
     ReamaningText: {
         fontSize: 20,
         fontWeight: 700,
         color: "#fff",
-        marginLeft: 40,
-        marginTop: 11
     },
 
     Ads: {
@@ -240,8 +239,8 @@ const styles = StyleSheet.create({
     },
 
     ShowCard: {
-        width: 402,
-        height: 637,
+        width: '100%',
+        height: '100%',
         flexDirection: "row",
         justifyContent: "center",
     },
