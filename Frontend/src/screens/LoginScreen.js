@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
+
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 // import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 export default function LoginScreen() {
@@ -84,9 +85,10 @@ export default function LoginScreen() {
     end={{ x: 1, y: 1 }}
     style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="arrow-back" size={24} color={"white"} style={styles.backButton} />
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+          <Ionicons name="arrow-back" size={30} color={"black"} style={styles.backButton} />
         </TouchableOpacity>
+
         <Text style={styles.logintitle}>LOG IN</Text>
 
         <View style={styles.inputContainer}>
@@ -156,8 +158,9 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans',
   },
   backButton: {
-    marginBottom: -15,
+    marginBottom: -20,
     alignSelf: 'flex-start',
+    padding: 5,
   },
   logintitle: {
     fontSize: 24,

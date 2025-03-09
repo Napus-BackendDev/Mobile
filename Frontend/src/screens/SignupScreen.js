@@ -75,8 +75,8 @@ export default function SignupScreen() {
   return (
     <LinearGradient colors={['#FFF','#FFF']} style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color={"black"} style={styles.backButton} />
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+        <Ionicons name="arrow-back" size={30} color={"black"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.signuptitle}>SIGN UP</Text>
 
@@ -146,8 +146,9 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans',
   },
   backButton: {
-    marginBottom: -15,
+    marginBottom: -20,
     alignSelf: 'flex-start',
+    padding: 5,
   },
   signuptitle: {
     fontSize: 24,
