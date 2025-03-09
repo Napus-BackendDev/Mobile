@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
-// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
           'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
-      });
-    const navigation = useNavigation();
+    });
     const [username,setUsername]=useState('');
     const [gmail,setGmail]=useState('');
     const [password,setPassword]=useState('');
@@ -86,22 +82,21 @@ export default function LoginScreen() {
     style={styles.container}>
       <View style={styles.pageContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Profile")}>
-          <Ionicons name="arrow-back" size={30} color={"black"} style={styles.backButton} />
+          <Ionicons name="arrow-back" size={30} color={"white"} style={styles.backButton} />
         </TouchableOpacity>
-
         <Text style={styles.logintitle}>LOG IN</Text>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/UserIcon.png')} style={styles.icon} />
           <TextInput style={styles.input} placeholder="USERNAME" value={username} onChangeText={setUsername}/>
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/EmailIcons.png')} style={styles.mailicon} />
           <TextInput style={styles.input} placeholder="GMAIL" value={gmail} onChangeText={setGmail}/>
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/LockIcon.png')} style={styles.icon} />
           <TextInput style={styles.input} placeholder="PASSWORD" secureTextEntry={true} value={password} onChangeText={setPassword} />
         </View>
@@ -110,7 +105,7 @@ export default function LoginScreen() {
           <Text style={styles.loginforgot}>FORGOT PASSWORD</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.login} onPress={navigation.navigate('ProfileLogIned')}>
+        <TouchableOpacity style={styles.login} onPress={handleLogin}>
           <Text style={styles.loginbuttonText}>LOG IN</Text>
         </TouchableOpacity>
 
@@ -124,16 +119,16 @@ export default function LoginScreen() {
 
 
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton} onPress={signInWithFacebook}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signInWithFacebook}>
             <Image source={require('../../assets/Icons/facebook.png')} style={styles.socialIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton} onPress={signInWithGoogle}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signInWithGoogle}>
             <Image source={require('../../assets/Icons/google.png')} style={styles.socialIcon} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.bottomText}>
-          <Text>DON'T HAVE AN ACCOUNT?</Text>
+          <Text style={{ fontSize: 12, fontWeight: 600, color: '#3B444D', fontFamily: 'JosefinSans', }}>DON'T HAVE AN ACCOUNT?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
             <Text style={styles.loginlinkText}>SIGN UP</Text>
           </TouchableOpacity>
@@ -155,12 +150,11 @@ const styles = StyleSheet.create({
     padding: 30,
     borderRadius: 15,
     width: '90%',
-    fontFamily: 'JosefinSans',
   },
   backButton: {
-    marginBottom: -20,
     alignSelf: 'flex-start',
-    padding: 5,
+    position: 'absolute',
+    zIndex: 1,
   },
   logintitle: {
     fontSize: 24,
@@ -173,12 +167,18 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
+    height: 40,
     borderRadius: 40,
     paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor:"#FFF"
+    marginBottom: 30,
+    backgroundColor:"#F4F8FB",
+    fontFamily: 'JosefinSans',
+  },
+  shadow: {
+    shadowColor: "#3E485A",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   icon: {
     width: 16,
@@ -196,15 +196,17 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 10,
+    color: '#737B81',
     fontFamily: 'JosefinSans',
   },
   forgotPassword: {
     alignSelf: 'center',
-    marginBottom: 20,
+    marginTop: -20,
+    marginBottom: 30,
+    fontFamily: 'JosefinSans',
   },
   loginforgot:{
     color:"white",
-    fontFamily: 'JosefinSans',
   },
   login: {
     backgroundColor: '#FFF',
@@ -220,22 +222,22 @@ const styles = StyleSheet.create({
   },
   orText: {
     textAlign: 'center',
-    marginBottom: 20,
     marginLeft:10,
     marginRight:10,
+    color: '#3B444D',
     fontFamily: 'JosefinSans',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'center'
+    justifyContent:'center',
+    marginBottom: 20,
   },
   line: {
     width: 70,
     height: 1.5,
-    backgroundColor: 'black',
+    backgroundColor: '#3B444C',
     position:'relative',
-    marginBottom:25,
     padding: '0 10',
     borderRadius:1,
   },
@@ -255,13 +257,16 @@ const styles = StyleSheet.create({
     height: 40,
   },
   bottomText: {
+    width: 240,
     flexDirection: 'row',
-    justifyContent: 'center',
-    fontFamily: 'JosefinSans',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
   },
   loginlinkText: {
+    height: '100%',
     color: '#FFF',
-    fontWeight: 'bold',
+    fontWeight: 600,
+    fontSize: 12,
     fontFamily: 'JosefinSans',
   },
 });

@@ -2,7 +2,7 @@ import { View, StyleSheet, Image, Text, ImageBackground, TouchableOpacity, Scrol
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
-import { getStorage, ref, getDownloadURL } from "../../FireBaseConfig";
+import { getStorage, ref, getDownloadURL } from "../../firebaseConfig";
 
 export default function DailyScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -124,6 +124,7 @@ export default function DailyScreen({ navigation }) {
                     >
                         <Image source={{ uri: confirm ? backCard : imageUrl }} style={styles.Card1}/>
                     </LinearGradient>
+                    confirm ? <View></View> : ''
                 </View>
 
                 {/*Footer*/}

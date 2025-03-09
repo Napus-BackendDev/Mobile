@@ -1,378 +1,183 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useFonts } from 'expo-font';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View ,Image ,TouchableOpacity} from 'react-native';
+import { useFonts } from "expo-font";
+import { collection, getDocs } from 'firebase/firestore';
+import { db , getStorage , ref , getDownloadURL } from '../../firebaseConfig';
+import { useEffect, useState } from 'react';
 
-export default function HomeScreen({ navigation }) {
-    const [fontsLoaded] = useFonts({
-        'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
-    });
+export default function ProfileLogInedScreen({ navigation }) {
 
-    const [age, setAge] = useState();
+  const [image, setImage] = useState(null);
+  const [name, setname] = useState(null);
+  const [email, setemail] = useState(null);
+  const storage = getStorage();
 
-    const [selectedMale, setSelectedMale] = useState(false);
-    const [selectedFemale, setSelectedFemale] = useState(false);
-    const [selectedLgbt, setSelectedLgbt] = useState(false);
-    const [selectedNot, setSelectedNot] = useState(false);
 
-    const [skipAnim, setSkipAnim] = useState(false);
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const url = await getDownloadURL(ref(storage, "User_Picture/pic.jpg")); // ดึงข้อมูลจาก Firestore
+        setImage(url); // บันทึกลิงก์รูปที่ดึงมา
+      } catch (error) {
+        console.error("Error Fetching images: ", error);
+      }
+    };
+    fetchImages();
+  }, []);
 
-    return (
-        <LinearGradient 
-            colors={['#EFB6C8', '#8B87CC', '#EFB6C8']} 
-            start={{ x: 0.05, y: 0.05 }}
-            end={{ x: 0.95, y: 0.95 }}
-            style={styles.container}
-        >
-            {/* Topic */}
-            <Text style={ component.name }>FORTUNE</Text>
+  const [fontsLoaded] = useFonts({
+      'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
+  });
 
-            {/* Navigation Tab */}
-            <View style={ styles.navigation }>
-                <TouchableOpacity style={ component.navigator } onPress={() => navigation.navigate('Profile')}>PROFILE</TouchableOpacity>
-                <View style={ component.line }/>
-                <TouchableOpacity style={ component.navigator }>STORE</TouchableOpacity>
-            </View>
+  return (
+    <LinearGradient
+      colors={['#EFB6C8', '#8B87CC', '#EFB6C8']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.background}
+    >
+      <View style={ styles.header }>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Image
+            source={require('../../assets/img/Arrow.png')}
+            style={{ width: 23.03, height: 14 }}
+          />
+        </TouchableOpacity>
+        <Text style={styles.title}>PROFILE</Text>
+      </View>
 
-            {/* Personal Tab */}
-            <View style={ styles.personal }>
-                <Text style={ component.topic }>PERSONAL</Text>
-                <LinearGradient 
-                    colors={['#EFB6C8', '#8B87CC']} 
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 1 }}
-                    style={ component.topicLine }
-                />
-                <View style={ part.personal }>
-                    <View style={{ width: 220 }}>
-                        <Text style={ component.subTopic }>GENDER</Text>
-                        <View style={ part.gender }>
-                            <View style={ part.genderButton }>
-                                <TouchableOpacity 
-                                    style={ component.genderButton }
-                                    onPress={() => {setSelectedMale(!selectedMale), selectedMale === false ? (setSelectedFemale(false), setSelectedLgbt(false), setSelectedNot(false)) : ''}}
-                                >
-                                    {selectedMale && <View style={ component.innerRadio }/>}
-                                </TouchableOpacity>
-                                <Text style={ component.genderText }>MALE</Text>
-                            </View>
-                            <View style={ part.genderButton }>
-                                <TouchableOpacity 
-                                    style={ component.genderButton }
-                                    onPress={() => {setSelectedFemale(!selectedFemale), selectedFemale === false ? (setSelectedMale(false), setSelectedLgbt(false), setSelectedNot(false)) : ''}}
-                                >
-                                    {selectedFemale && <View style={ component.innerRadio }/>}
-                                </TouchableOpacity>
-                                <Text style={ component.genderText }>FEMALE</Text>
-                            </View>
-                            <View style={ part.genderButton }>
-                                <TouchableOpacity 
-                                    style={ component.genderButton }
-                                    onPress={() => {setSelectedLgbt(!selectedLgbt), selectedLgbt === false ? (setSelectedFemale(false), setSelectedMale(false), setSelectedNot(false)) : ''}}
-                                >
-                                    {selectedLgbt && <View style={ component.innerRadio }/>}
-                                </TouchableOpacity>
-                                <Text style={ component.genderText }>LGBTQ+</Text>
-                            </View>
-                            <View style={ part.genderButton }>
-                                <TouchableOpacity 
-                                    style={ component.genderButton }
-                                    onPress={() => {setSelectedNot(!selectedNot), selectedNot === false ? (setSelectedFemale(false), setSelectedLgbt(false), setSelectedMale(false)) : ''}}
-                                >
-                                    {selectedNot && <View style={ component.innerRadio }/>}
-                                </TouchableOpacity>
-                                <Text style={ component.genderText }>DO NOT INDENTITY</Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={[ component.line, { height: 70, marginHorizontal: 15, alignSelf: 'end', } ]}/>
-                    <View>
-                        <Text style={ component.subTopic }>AGE</Text>
-                        <View style={ part.age }>
-                            <TextInput 
-                                style={ component.ageInput }
-                            />
-                        </View>
-                    </View>
-                </View>
-                <Text style={ component.info }>THIS INFORMATION IS NOT NECESSARY, IT IS USED TO PERSONALIZE THE PREDICTIONS FOR YOU</Text>
-            </View>
+      <View style={ styles.profile }>
+        {/* Profile Picture */}
+        <Image
+          source={{ uri: image}} // ใช้รูปจาก Firebase หรือรูป default
+          style={{ width: 89, height: 86, marginTop: '-6%', position: 'absolute', alignSelf: 'center', borderRadius: 50 , borderWidth: 3, borderColor: 'white'}}
+        />
 
-            {/* Category Tab */}
-            <View style={ styles.category }>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 }}>
-                    <View>
-                        <Text style={ component.topic }>CATEGORY</Text>
-                        <LinearGradient 
-                            colors={['#EFB6C8', '#8B87CC']} 
-                            start={{ x: 0, y: 1 }}
-                            end={{ x: 1, y: 1 }}
-                            style={ component.topicLine }
-                        />
-                    </View>
-                    <View style={ part.skipAnim }>
-                        <Text style={ component.skipText }>SKIP ANIMATION</Text>
-                        <TouchableOpacity 
-                            style={ component.skipButton }
-                            onPress={() => {setSkipAnim(!skipAnim)}}
-                        >
-                            {skipAnim && <View style={ component.innerRadio }/>}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={ part.category }>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity onPress={() => navigation.navigate('Daily')}>
-                            <LinearGradient
-                                colors={['#FFB6C2', '#FFDFA3']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Smile.png')} style = { component.categoryImage }/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#FF6258'} ]}>DAILY</Text>
-                    </View>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity>
-                            <LinearGradient
-                                colors={['#D6BFFF', '#47CECE']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Calendar.png')} style = { component.categoryImage }/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#9D86DA'} ]}>MONTHLY</Text>
-                    </View>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity>
-                            <LinearGradient
-                                colors={['#A0FFBA', '#00C268']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Plus.png')} style = { component.categoryImage }/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#40DB7B'} ]}>HEALTH</Text>
-                    </View>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity>
-                            <LinearGradient
-                                colors={['#FFFFA0', '#E7A235']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Dollar.png')} style = { component.categoryImage }/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#F1B83B'} ]}>FINANCIAL</Text>
-                    </View>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity>
-                            <LinearGradient
-                                colors={['#FFB5B5', '#FF6666']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Heart.png')} style = { component.categoryImage }/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#FF5252'} ]}>LOVE</Text>
-                    </View>
-                    <View style={ part.categoryButton }>
-                        <TouchableOpacity>
-                            <LinearGradient
-                                colors={['#A0DFFF', '#159DE2']}
-                                start={{ x: 1, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.categoryButton }
-                            />
-                            <Image source = {require('../../assets/img/Case up.png')} style = {{ position: 'absolute', width: '97%', height: '97%', top: -10, right: 1, }}/>
-                            <Image source = {require('../../assets/img/Case down.png')} style = {{ position: 'absolute', width: '90%', height: '90%', bottom: -7, right: 5, }}/>
-                        </TouchableOpacity>
-                        <Text style={[ component.categoryText, {color: '#437FEE'} ]}>CAREER</Text>
-                    </View>
-                </View>
-            </View>
+        {/* Profile Name */}
+        <View style={{ alignItems: 'center', flexDirection: 'row', top: '5.5%' }}>
+          <Text style={{fontSize: 14 , color: "#FF676F" , fontWeight: 600}}>Napus Samuanpho</Text>
+          <TouchableOpacity>
+            <Image source={require('../../assets/img/Profile_icon/Edit.png')}
+            style={{ width: 12, height: 12, marginLeft: 5 }}
+            />
+          </TouchableOpacity>
+        </View>
 
-        </LinearGradient>
-    );
+        {/* Profile Email */}
+        <View style={{ alignItems: 'center', flexDirection: 'row', top: '7%' }}>
+          <Text style={{fontSize: 12 , color: "black" , fontWeight: 400}}>Napus.sam@gmail.com</Text>
+          <TouchableOpacity>
+            <Image source={require('../../assets/img/Profile_icon/EditEmail.png')}
+            style={{ width: 10, height: 10, marginLeft: 5 }}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Profile History */}
+        <View style={ styles.history }>
+          {/* History Header */}
+          <View style={{ flexDirection: 'row', marginTop: 15, width: 300 , justifyContent: 'space-between' }}>
+            <Text style={{fontSize: 10 , color: "#FF676F" , fontWeight: 700}}>TAROT HISTORY</Text>
+            <TouchableOpacity>
+              <Text style={{fontSize: 10 , color: "black" , fontWeight: 500}}>SEE ALL</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* History Card */}
+          <View style={{ flexDirection: 'row', marginTop: 15, width: 300 , height: 138, justifyContent: 'space-between' }}>
+            <Image source={require('../../assets/Card/Card1.png')} style={{width: 80,height: 138}}/>
+            <Image source={require('../../assets/Card/Card2.png')} style={{width: 80,height: 138}}/>
+            <Image source={require('../../assets/Card/Card3.png')} style={{width: 80,height: 138}}/>
+          </View>
+        </View>
+
+        {/* Profile Buttons */}
+        <View style={{alignItems: 'center', width: 230, marginTop: 15 , height: 180}}>
+          <TouchableOpacity style={styles.Button}>
+            <Image source={require('../../assets/img/Profile_icon/History.png')} style={{width:16,height:16}}/>
+            <Text style={styles.Button_Text}>PURCHASE HISTORY</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.Button}>
+            <Image source={require('../../assets/img/Profile_icon/Q.png')} style={{width:10,height:16}}/>
+            <Text style={{paddingLeft: 28 ,color: 'black', textAlign: 'center' , fontWeight: 500 , fontSize: 12}}>HELP & SUPPORT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.Button}>
+            <Image source={require('../../assets/img/Profile_icon/Out.png')} style={{width:16,height:14}}/>
+            <Text style={styles.Button_Text}>LOG OUT</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </LinearGradient>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        fontFamily: 'JosefinSans',
-    },
-    navigation: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        width: 360,
-        height: 50,
-        borderRadius: 20,
-        marginBottom: 40,
-    },
-    personal: {
-        backgroundColor: 'white',
-        width: 360,
-        height: 210,
-        borderRadius: 16,
-        padding: 20,
-        paddingTop: 15,
-        marginBottom: 20,
-    },
-    category: {
-        backgroundColor: 'white',
-        width: 360,
-        height: 380,
-        borderRadius: 16,
-        padding: 20,
-        paddingTop: 15,
-    },
-});
-
-const part = StyleSheet.create({
-    personal: {
-        flexDirection: 'row',
-    },
-    gender: {
-        flexDirection: 'row',
-        width: 224,
-        marginLeft: -15,
-    },
-    age: {
-        width: 70,
-    },
-    genderButton: {
-        alignItems: 'center',
-        width: 60,
-    },
-    skipAnim: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: 118,
-    },
-    category: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    categoryButton: {
-        width: 90,
-    },
-});
-
-const component = StyleSheet.create({
-    name: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: 'white',
-        marginTop: 70,
-        marginBottom: 50,
-    },
-    topic: {
-        fontSize: 22,
-        fontWeight: 600,
-        color: '#FF676F',
-    },
-    subTopic: {
-        fontSize: 12,
-        color: '#5B5B5B',
-        height: 30,
-        marginTop: 10,
-    },
-    navigator: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 180,
-        height: '100%',
-        fontSize: 14,
-        color: '#5B5B5B',
-    },
-    topicLine: {
-        width: 80,
-        height: 2,
-        borderRadius: 100,
-    },
-    line: {
-        height: 30, 
-        width: 1, 
-        backgroundColor: '#E6E6E6', 
-        borderRadius: 100,
-    },
-    genderText: {
-        fontSize: 10,
-        color: '#373737',
-        height: 20,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    genderButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 20,
-        height: 20,
-        backgroundColor: '#EAECF3',
-        borderWidth: 1,
-        borderColor: '#BBBDC2',
-        borderRadius: 4,
-    },
-    innerRadio: {
-        width: '90%',
-        height: '90%',
-        backgroundColor: '#6483FF',
-        borderRadius: '20%',
-    },
-    ageInput: {
-        width: 70,
-        height: 50,
-        backgroundColor: '#EAECF3',
-        borderWidth: 1,
-        borderColor: '#BBBDC2',
-        borderRadius: 6,
-    },
-    info: {
-        fontSize: 10,
-        color: '#FF2323',
-        marginTop: 25,
-    },
-    skipText: {
-        fontSize: 12,
-        fontWeight: 600,
-        color: '#5B5B5B',
-    },
-    skipButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 13,
-        height: 13,
-        borderWidth: 1,
-        borderColor: '#999999',
-        borderRadius: 2,
-    },
-    categoryText: {
-        fontSize: 16,
-        fontWeight: 500,
-        alignSelf: 'center',
-        marginTop: 10,
-        marginBottom: 30,
-        color: 'black',
-    },
-    categoryButton: {
-        width: 90,
-        height: 90,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.1)',
-    },
-    categoryImage: {
-        position: 'absolute', 
-        width: '100%', 
-        height: '100%', 
-    },
+  background: {
+    flex: 1,
+    overflow: 'hidden',
+    fontFamily: 'JosefinSans',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: '6.5%',
+  },
+  title: {
+    marginTop: '15%',
+    marginBottom: '15%',
+    marginLeft: '28%',
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
+    fontFamily: 'JosefinSans',
+  },
+  text: {
+    fontSize: 12,
+    color: 'black',
+    fontWeight: 500,
+    top: '15%',
+    fontFamily: 'JosefinSans',
+  },
+  profile: {
+    alignSelf: 'center',
+    width: 678,
+    height: 1225,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 500,
+    borderTopRightRadius: 500,
+    alignItems: 'center',
+  },
+  history: {
+    marginTop: "18%",
+    alignItems: 'center',
+    width: 340,
+    height: 200,
+    backgroundColor: '#F4F8FB',
+    borderRadius: 10,
+    shadowColor: '#3E485A',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  Button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 30,
+    paddingLeft: 30,
+    width: 230,
+    height: 40,
+    backgroundColor: '#F4F8FB',
+    borderRadius: 30,
+    marginTop: 30,
+  },
+  Button_Text: {
+    paddingLeft: 24,
+    color: 'black',
+    textAlign: 'center',
+    fontWeight: 500,
+    fontSize: 12,
+    fontFamily: 'JosefinSans',
+  },
 });

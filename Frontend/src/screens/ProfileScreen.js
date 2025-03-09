@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: '5%',
+    fontFamily: 'JosefinSans',
   },
   title: {
     marginTop: '15%',
@@ -67,12 +68,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     fontWeight: 'bold',
+    fontFamily: 'JosefinSans',
   },
   text: {
     fontSize: 12,
     color: 'black',
     fontWeight: 500,
     top: '15%',
+    fontFamily: 'JosefinSans',
   },
   profile: {
     alignSelf: 'center',
@@ -92,18 +95,19 @@ const styles = StyleSheet.create({
   },
   buttons_Login: {
     backgroundColor: '#FF7575',
-    fontcolor: 'white',
+    color: 'white',
     borderRadius: 20,
     padding: 10,
     width: 170,
     height: 40,
+    fontFamily: 'JosefinSans',
   },
   buttons_Signup: {
     // Size
     width: 170,
     height: 40,
     backgroundColor: '#FFFFFF',
-    fontcolor: '#FF7575',
+    color: '#FF7575',
     // Shadow
     shadowColor: '#5B0606',
     shadowOpacity: 0.25,
@@ -112,6 +116,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     // Border
     borderRadius: 20,
-    padding: 10
+    padding: 10,
+    fontFamily: 'JosefinSans',
   },
 });

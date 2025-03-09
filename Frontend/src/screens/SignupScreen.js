@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
-// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-export default function SignupScreen() {
+
+export default function SignupScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
             'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
-        });
-    const navigation = useNavigation();
+    });
     const [username, setUsername] = useState('');
     const [gmail, setGmail] = useState('');
     const [password, setPassword] = useState('');
@@ -76,21 +73,21 @@ export default function SignupScreen() {
     <LinearGradient colors={['#FFF','#FFF']} style={styles.container}>
       <View style={styles.pageContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Profile")}>
-        <Ionicons name="arrow-back" size={30} color={"black"} style={styles.backButton} />
+          <Ionicons name="arrow-back" size={30} color={"#3B444D"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.signuptitle}>SIGN UP</Text>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/UserIcon.png')} style={styles.icon} />
           <TextInput style={styles.input} placeholder="USERNAME" value={username} onChangeText={setUsername}/>
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/EmailIcons.png')} style={styles.mailicon} />
           <TextInput style={styles.input} placeholder="GMAIL" value={gmail} onChangeText={setGmail} />
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/LockIcon.png')} style={styles.icon} />
           <TextInput style={styles.input} placeholder="PASSWORD" secureTextEntry={true} value={password} onChangeText={setPassword} />
         </View>
@@ -105,24 +102,22 @@ export default function SignupScreen() {
 
         <View style={styles.row}>
             <View style={styles.line}></View>
-            <Text style={styles.orText}>
-            OR SIGN UP WITH
-            </Text>
+            <Text style={styles.orText}>OR SIGN UP WITH</Text>
             <View style={styles.line}></View>
         </View>
 
 
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton} onPress={signUpWithFacebook}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signUpWithFacebook}>
             <Image source={require('../../assets/Icons/facebook.png')} style={styles.socialIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton} onPress={signUpWithGoogle}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signUpWithGoogle}>
             <Image source={require('../../assets/Icons/google.png')} style={styles.socialIcon} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.bottomText}>
-          <Text> ALREADY HAVE AN ACCOUNT?</Text>
+          <Text style={{ fontSize: 12, fontWeight: 600, color: '#3B444D', fontFamily: 'JosefinSans', }}> ALREADY HAVE AN ACCOUNT?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.signuplinkText}>LOG IN</Text>
           </TouchableOpacity>
@@ -143,16 +138,15 @@ const styles = StyleSheet.create({
     padding: 30,
     borderRadius: 15,
     width: '90%',
-    fontFamily: 'JosefinSans',
   },
   backButton: {
-    marginBottom: -20,
     alignSelf: 'flex-start',
-    padding: 5,
+    position: 'absolute',
+    zIndex: 1,
   },
   signuptitle: {
     fontSize: 24,
-    color:"black",
+    color:"#3B444D",
     fontWeight: 'bold',
     marginBottom: 50,
     textAlign: 'center',
@@ -161,12 +155,18 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
+    height: 40,
     borderRadius: 40,
     paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor:"#FFF"
+    marginBottom: 30,
+    backgroundColor:"#F4F8FB",
+    fontFamily: 'JosefinSans',
+  },
+  shadow: {
+    shadowColor: "#3E485A",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   icon: {
     width: 16,
@@ -184,11 +184,14 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 10,
+    color: '#737B81',
     fontFamily: 'JosefinSans',
   },
   forgotPassword: {
     alignSelf: 'center',
-    marginBottom: 20,
+    marginTop: -20,
+    marginBottom: 30,
+    fontFamily: 'JosefinSans',
   },
   signupforgot:{
     color:"#FF6961",
@@ -209,22 +212,22 @@ const styles = StyleSheet.create({
   },
   orText: {
     textAlign: 'center',
-    marginBottom: 20,
     marginLeft:10,
     marginRight:10,
+    color: '#3B444D',
     fontFamily: 'JosefinSans',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'center'
+    justifyContent:'center',
+    marginBottom: 20,
   },
   line: {
     width: 70,
     height: 1.5,
-    backgroundColor: 'black',
+    backgroundColor: '#3B444C',
     position:'relative',
-    marginBottom:25,
     padding: '0 10',
     borderRadius:1,
   },
@@ -244,13 +247,16 @@ const styles = StyleSheet.create({
     height: 40,
   },
   bottomText: {
+    width: 250,
     flexDirection: 'row',
-    justifyContent: 'center',
-    fontFamily: 'JosefinSans',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
   },
   signuplinkText: {
-    color: '#FF6961',
-    fontWeight: 'bold',
+    height: '100%',
+    color: '#FF7575',
+    fontWeight: 600,
+    fontSize: 12,
     fontFamily: 'JosefinSans',
   },
 });
