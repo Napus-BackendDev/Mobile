@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from 'expo-font';
 
@@ -129,7 +129,10 @@ export default function HomeScreen({ navigation }) {
                                     end={{ x: 1, y: 1 }}
                                     style={ component.categoryButton }
                                 />
+                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 4, bottom: 11, rotate: '16deg' }}/>
                                 <Image source = {require('../../assets/img/Smile.png')} style = { component.categoryImage }/>
+                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 48, height: 48, position: 'absolute', left: -14, top: 1, transform: [{scaleX: -1}] }}/>
+                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 58, height: 58, position: 'absolute', right: -24, top: -19, rotate: '13deg' }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#FF6258'} ]}>DAILY</Text>
                         </View>
@@ -142,6 +145,8 @@ export default function HomeScreen({ navigation }) {
                                     style={ component.categoryButton }
                                 />
                                 <Image source = {require('../../assets/img/Calendar.png')} style = { component.categoryImage }/>
+                                <Image source = {require('../../assets/img/Check.png')} style = {{ width: 23, height: 23, position: 'absolute', left: 14, bottom: 7, rotate: '-20deg' }}/>
+                                <Image source = {require('../../assets/img/Check.png')} style = {{ width: 40, height: 40, position: 'absolute', right: -4, top: 1 }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#9D86DA'} ]}>MONTHLY</Text>
                         </View>
@@ -154,6 +159,8 @@ export default function HomeScreen({ navigation }) {
                                     style={ component.categoryButton }
                                 />
                                 <Image source = {require('../../assets/img/Plus.png')} style = { component.categoryImage }/>
+                                <Image source = {require('../../assets/img/Leaf.png')} style = {{ width: 24, height: 24, position: 'absolute', left: 12, top: 27, rotate: '9deg', transform: [{scaleX: -1}] }}/>
+                                <Image source = {require('../../assets/img/Leaf.png')} style = {{ width: 40, height: 40, position: 'absolute', right: -12, top: -15 }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#40DB7B'} ]}>HEALTH</Text>
                         </View>
@@ -165,7 +172,10 @@ export default function HomeScreen({ navigation }) {
                                     end={{ x: 1, y: 1 }}
                                     style={ component.categoryButton }
                                 />
+                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 22, height: 22, position: 'absolute', right: 15, top: 27, rotate: '14deg', transform: [{scaleX: -1}] }}/>
                                 <Image source = {require('../../assets/img/Dollar.png')} style = { component.categoryImage }/>
+                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 19, height: 19, position: 'absolute', left: 28, bottom: 22, rotate: '-8deg' }}/>
+                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 40, height: 40, position: 'absolute', left: 26, top: -20 }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#F1B83B'} ]}>FINANCIAL</Text>
                         </View>
@@ -178,6 +188,8 @@ export default function HomeScreen({ navigation }) {
                                     style={ component.categoryButton }
                                 />
                                 <Image source = {require('../../assets/img/Heart.png')} style = { component.categoryImage }/>
+                                <Image source = {require('../../assets/img/SmallHeart.png')} style = {{ width: 24, height: 24, position: 'absolute', right: 2, top: 15, rotate: '7deg' }}/>
+                                <Image source = {require('../../assets/img/SmallHeart.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 8, top: 6 }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#FF5252'} ]}>LOVE</Text>
                         </View>
@@ -191,6 +203,8 @@ export default function HomeScreen({ navigation }) {
                                 />
                                 <Image source = {require('../../assets/img/Case up.png')} style = {{ position: 'absolute', width: '97%', height: '97%', top: -10, right: 1, }}/>
                                 <Image source = {require('../../assets/img/Case down.png')} style = {{ position: 'absolute', width: '90%', height: '90%', bottom: -7, right: 5, }}/>
+                                <Image source = {require('../../assets/img/Docs.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 8, top: 12 }}/>
+                                <Image source = {require('../../assets/img/Docs.png')} style = {{ width: 26, height: 26, position: 'absolute', right: 2, top: 20, rotate: '16deg' }}/>
                             </TouchableOpacity>
                             <Text style={[ component.categoryText, {color: '#437FEE'} ]}>CAREER</Text>
                         </View>
@@ -373,7 +387,7 @@ const component = StyleSheet.create({
     },
     categoryImage: {
         position: 'absolute', 
-        width: '100%', 
-        height: '100%', 
+        width: 90,
+        height: 90,
     },
 });
