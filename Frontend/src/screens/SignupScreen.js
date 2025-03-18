@@ -132,18 +132,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    fontFamily: 'JosefinSans',
   },
   pageContainer: {
+    flex:1,
     padding: 30,
     borderRadius: 15,
     width: '90%',
+    marginTop:120,
+    
   },
   backButton: {
-    alignSelf: 'flex-start',
     position: 'absolute',
-    marginTop: -4,
-    zIndex: 1,
+    top: 15,
+    left: 20, 
+    zIndex: 10,
   },
   signuptitle: {
     fontSize: 24,
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     backgroundColor:"#F4F8FB",
     fontFamily: 'JosefinSans',
+    
   },
   shadow: {
     shadowColor: "#3E485A",
@@ -187,16 +190,19 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#737B81',
     fontFamily: 'JosefinSans',
+    fontWeight: 'bold',
   },
   forgotPassword: {
     alignSelf: 'center',
     marginTop: -20,
     marginBottom: 30,
     fontFamily: 'JosefinSans',
+    
   },
   signupforgot:{
     color:"#FF6961",
     fontFamily: 'JosefinSans',
+    fontWeight:"bold",
   },
 
   signup: {

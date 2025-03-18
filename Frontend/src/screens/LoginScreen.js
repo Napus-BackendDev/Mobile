@@ -156,15 +156,17 @@ const styles = StyleSheet.create({
 
   },
   pageContainer: {
+    flex:1,
     padding: 30,
     borderRadius: 15,
     width: '90%',
+    marginTop:120,
   },
   backButton: {
-    alignSelf: 'flex-start',
     position: 'absolute',
-    marginTop: -4,
-    zIndex: 1,
+    top: 15, // Adjust as needed
+    left: 20, // Moves it to the left
+    zIndex: 10,
   },
   logintitle: {
     fontSize: 24,
@@ -208,6 +210,7 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#737B81',
     fontFamily: 'JosefinSans',
+    fontWeight: 'bold',
   },
   forgotPassword: {
     alignSelf: 'center',
@@ -216,7 +219,9 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans',
   },
   loginforgot:{
+    fontFamily: 'JosefinSans',
     color:"white",
+    fontWeight: 'bold',
   },
   login: {
     backgroundColor: '#FFF',
