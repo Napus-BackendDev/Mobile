@@ -121,7 +121,7 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.row}>
             <View style={styles.line}></View>
             <Text style={styles.orText}>
-            OR LOG IN WITH
+            OR LOG IN WITH    
             </Text>
             <View style={styles.line}></View>
         </View>

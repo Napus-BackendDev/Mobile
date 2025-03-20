@@ -29,9 +29,9 @@ export default function HomeScreen({ navigation }) {
 
                 {/* Navigation Tab */}
                 <View style={ styles.navigation }>
-                    <TouchableOpacity style={ component.navigator } onPress={() => navigation.navigate('Profile')}>PROFILE</TouchableOpacity>
+                    <TouchableOpacity style={ component.navigator } onPress={() => navigation.navigate('Profile')}><Text>PROFILE</Text></TouchableOpacity>
                     <View style={ component.line }/>
-                    <TouchableOpacity style={ component.navigator } >STORE</TouchableOpacity>
+                    <TouchableOpacity style={ component.navigator } onPress={()=>navigation.navigate("Store")}><Text>STORE</Text></TouchableOpacity>
                 </View>
 
                 {/* Personal Tab */}

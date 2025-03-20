@@ -9,6 +9,7 @@ import ProfileLogInedScreen from './src/screens/ProfileLogInedScreen';
 import DailyScreen from './src/screens/DailyScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
+import StoreScreen from './src/screens/StoreScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerShown: false }}/>
         <Stack.Screen name='ProfileLogIned' component={ProfileLogInedScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Daily" component={DailyScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name='Store' component={StoreScreen} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
