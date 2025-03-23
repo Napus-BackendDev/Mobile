@@ -1,393 +1,302 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useState, useRef } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Animated, PanResponder, Image } from "react-native";
 import { useFonts } from 'expo-font';
 
 export default function HomeScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
         'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
+        'Jost': require('../../assets/fonts/Jost.ttf'),
     });
 
-    const [age, setAge] = useState();
+    const [selectedTopic, setSelectedTopic] = useState("Daily");
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [cardContent, setCardContent] = useState("Daily");
+    const [currentArray, setCurrentArray] = useState("timeFrame");
+    const pan = useRef(new Animated.ValueXY()).current;
+    const rotate = useRef(new Animated.Value(0)).current;
+    const scale = useRef(new Animated.Value(1)).current;
 
-    const [selectedMale, setSelectedMale] = useState(false);
-    const [selectedFemale, setSelectedFemale] = useState(false);
-    const [selectedLgbt, setSelectedLgbt] = useState(false);
-    const [selectedNot, setSelectedNot] = useState(false);
+    const timeFrame = ["Daily", "Monthly"];
+    const lifeAspect = ["Love", "Financial", "Health", "Career"];
+    const date = new Date();
 
-    const [skipAnim, setSkipAnim] = useState(false);
+    const getCurrentArray = () => {
+        return currentArray === "timeFrame" ? timeFrame : lifeAspect;
+    };
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: Animated.event(
+                [null, { dx: pan.x }],
+                { useNativeDriver: false }
+            ),
+            onPanResponderRelease: (e, gesture) => {
+                if (Math.abs(gesture.dx) > 100) {
+                    const direction = gesture.dx > 0 ? -1 : 1;
+                    const currentArray = getCurrentArray();
+                    const newIndex = currentIndex + direction;
+                    
+                    // Animate card to back
+                    Animated.parallel([
+                        Animated.timing(pan.x, {
+                            toValue: direction * 500,
+                            duration: 300,
+                            useNativeDriver: false
+                        }),
+                        Animated.timing(rotate, {
+                            toValue: direction * 30,
+                            duration: 300,
+                            useNativeDriver: false
+                        }),
+                        Animated.timing(scale, {
+                            toValue: 0.8,
+                            duration: 300,
+                            useNativeDriver: false
+                        })
+                    ]).start(() => {
+                        // Reset card position
+                        pan.setValue({ x: 0, y: 0 });
+                        rotate.setValue(0);
+                        scale.setValue(1);
+
+                        // Handle array switching and index updates
+                        if (newIndex >= currentArray.length) {
+                            // Switch to lifeAspect if we're at the end of timeFrame
+                            setCurrentArray("lifeAspect");
+                            setCurrentIndex(0);
+                            setSelectedTopic(lifeAspect[0]);
+                            setCardContent(lifeAspect[0]);
+                        } else if (newIndex < 0) {
+                            if (currentArray === "lifeAspect") {
+                                // Switch back to timeFrame if we're at the start of lifeAspect
+                                setCurrentArray("timeFrame");
+                                setCurrentIndex(timeFrame.length - 1);
+                                setSelectedTopic(timeFrame[timeFrame.length - 1]);
+                                setCardContent(timeFrame[timeFrame.length - 1]);
+                            } else {
+                                // Stay at the beginning of timeFrame
+                                setCurrentIndex(0);
+                                setSelectedTopic(timeFrame[0]);
+                                setCardContent(timeFrame[0]);
+                            }
+                        } else {
+                            // Normal case - stay in current array
+                            setCurrentIndex(newIndex);
+                            setSelectedTopic(currentArray[newIndex]);
+                            setCardContent(currentArray[newIndex]);
+                        }
+                    });
+                } else {
+                    // Return card to original position
+                    Animated.spring(pan, {
+                        toValue: { x: 0, y: 0 },
+                        useNativeDriver: false
+                    }).start();
+                }
+            }
+        })
+    ).current;
+
+    const handleTopicSelect = (topic, index) => {
+        const array = timeFrame.includes(topic) ? "timeFrame" : "lifeAspect";
+        setCurrentArray(array);
+        setSelectedTopic(topic);
+        setCurrentIndex(index);
+        setCardContent(topic);
+    };
 
     return (
-            <LinearGradient 
-                colors={['#EFB6C8', '#8B87CC', '#EFB6C8']} 
-                start={{ x: 0.05, y: 0.05 }}
-                end={{ x: 0.95, y: 0.95 }}
-                style={styles.container}
-            >
-                {/* Topic */}
-                <Text style={ component.name }>FORTUNE</Text>
-
-                {/* Navigation Tab */}
-                <View style={ styles.navigation }>
-                    <TouchableOpacity style={ component.navigator } onPress={() => navigation.navigate('Profile')}><Text>PROFILE</Text></TouchableOpacity>
-                    <View style={ component.line }/>
-                    <TouchableOpacity style={ component.navigator } onPress={()=>navigation.navigate("Store")}><Text>STORE</Text></TouchableOpacity>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.title}>FORTUNE</Text>
+                <Text style={styles.subtitle}>FOR YOUR DAY, For Everyday</Text>
+                <Text style={styles.date}>{date.toLocaleDateString('en-US', { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}</Text>
+            </View>
+            <View style={styles.contentContainer}>
+                <View style={styles.cardContainer}>
+                    <Animated.View 
+                        style={[
+                            styles.card,
+                            {
+                                transform: [
+                                    { translateX: pan.x },
+                                    { rotate: rotate.interpolate({
+                                        inputRange: [-30, 0, 30],
+                                        outputRange: ['-30deg', '0deg', '30deg']
+                                    })},
+                                    { scale: scale }
+                                ]
+                            }
+                        ]}
+                        {...panResponder.panHandlers}
+                    >
+                        <View style={styles.cardTextContainer}>
+                            <Text style={styles.cardTitle}>{cardContent}</Text>
+                            <Text style={styles.cardSwipe}>SWIPE TO CHANGE</Text>
+                            <Text style={styles.cardText}>TAP TO SELECT</Text>
+                        </View>
+                    </Animated.View>
+                    <View style={[styles.cardBehind, {marginTop: 60, marginRight: 60, transform: [{ rotate: '4deg' }], backgroundColor: "#ADACAC"}]} />
+                    <View style={[styles.cardBehind, {marginTop: 60, marginLeft: 60, transform: [{ rotate: '-4deg' }], backgroundColor: "#BFBFBF"}]} />
+                    <View style={[styles.card, {zIndex: 1}]} />
                 </View>
-
-                {/* Personal Tab */}
-                <View style={ styles.personal }>
-                    <Text style={ component.topic }>PERSONAL</Text>
-                    <LinearGradient 
-                        colors={['#EFB6C8', '#8B87CC']} 
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        style={ component.topicLine }
-                    />
-                    <View style={ part.personal }>
-                        <View style={{ width: 220 }}>
-                            <Text style={ component.subTopic }>GENDER</Text>
-                            <View style={ part.gender }>
-                                <View style={ part.genderButton }>
-                                    <TouchableOpacity 
-                                        style={ component.genderButton }
-                                        onPress={() => {setSelectedMale(!selectedMale), selectedMale === false ? (setSelectedFemale(false), setSelectedLgbt(false), setSelectedNot(false)) : ''}}
-                                    >
-                                        {selectedMale && <View style={ component.innerRadio }/>}
-                                    </TouchableOpacity>
-                                    <Text style={ component.genderText }>MALE</Text>
-                                </View>
-                                <View style={ part.genderButton }>
-                                    <TouchableOpacity 
-                                        style={ component.genderButton }
-                                        onPress={() => {setSelectedFemale(!selectedFemale), selectedFemale === false ? (setSelectedMale(false), setSelectedLgbt(false), setSelectedNot(false)) : ''}}
-                                    >
-                                        {selectedFemale && <View style={ component.innerRadio }/>}
-                                    </TouchableOpacity>
-                                    <Text style={ component.genderText }>FEMALE</Text>
-                                </View>
-                                <View style={ part.genderButton }>
-                                    <TouchableOpacity 
-                                        style={ component.genderButton }
-                                        onPress={() => {setSelectedLgbt(!selectedLgbt), selectedLgbt === false ? (setSelectedFemale(false), setSelectedMale(false), setSelectedNot(false)) : ''}}
-                                    >
-                                        {selectedLgbt && <View style={ component.innerRadio }/>}
-                                    </TouchableOpacity>
-                                    <Text style={ component.genderText }>LGBTQ+</Text>
-                                </View>
-                                <View style={ part.genderButton }>
-                                    <TouchableOpacity 
-                                        style={ component.genderButton }
-                                        onPress={() => {setSelectedNot(!selectedNot), selectedNot === false ? (setSelectedFemale(false), setSelectedLgbt(false), setSelectedMale(false)) : ''}}
-                                    >
-                                        {selectedNot && <View style={ component.innerRadio }/>}
-                                    </TouchableOpacity>
-                                    <Text style={ component.genderText }>DO NOT INDENTITY</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={[ component.line, { height: 70, marginHorizontal: 15, alignSelf: 'end', } ]}/>
-                        <View>
-                            <Text style={ component.subTopic }>AGE</Text>
-                            <View style={ part.age }>
-                                <TextInput 
-                                    style={ component.ageInput }
-                                />
-                            </View>
-                        </View>
-                    </View>
-                    <Text style={ component.info }>THIS INFORMATION IS NOT NECESSARY, IT IS USED TO PERSONALIZE THE PREDICTIONS FOR YOU</Text>
-                </View>
-
-                {/* Category Tab */}
-                <View style={ styles.category }>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30 }}>
-                        <View>
-                            <Text style={ component.topic }>CATEGORY</Text>
-                            <LinearGradient 
-                                colors={['#EFB6C8', '#8B87CC']} 
-                                start={{ x: 0, y: 1 }}
-                                end={{ x: 1, y: 1 }}
-                                style={ component.topicLine }
-                            />
-                        </View>
-                        <View style={ part.skipAnim }>
-                            <Text style={ component.skipText }>SKIP ANIMATION</Text>
-                            <TouchableOpacity 
-                                style={ component.skipButton }
-                                onPress={() => {setSkipAnim(!skipAnim)}}
+                <View style={styles.topicContainer}>
+                    <View style={styles.topic}>
+                        {timeFrame.map((topic, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => handleTopicSelect(topic, index)}
+                                style={styles.topicItem}
                             >
-                                {skipAnim && <View style={ component.innerRadio }/>}
+                                <Text style={[styles.topicText, selectedTopic === topic && styles.topicTextSelected]}>
+                                    {topic}
+                                </Text>
                             </TouchableOpacity>
-                        </View>
+                        ))}
                     </View>
-                    <View style={ part.category }>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity onPress={() => navigation.navigate('Daily')}>
-                                <LinearGradient
-                                    colors={['#FFB6C2', '#FFDFA3']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 4, bottom: 11, rotate: '16deg' }}/>
-                                <Image source = {require('../../assets/img/Smile.png')} style = { component.categoryImage }/>
-                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 48, height: 48, position: 'absolute', left: -14, top: 1, transform: [{scaleX: -1}] }}/>
-                                <Image source = {require('../../assets/img/Balloon.png')} style = {{ width: 58, height: 58, position: 'absolute', right: -24, top: -19, rotate: '13deg' }}/>
+                    <View style={styles.topic}>
+                        {lifeAspect.map((topic, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => handleTopicSelect(topic, index)}
+                                style={styles.topicItem}
+                            >
+                                <Text style={[styles.topicText, selectedTopic === topic && styles.topicTextSelected]}>
+                                    {topic}
+                                </Text>
                             </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#FF6258'} ]}>DAILY</Text>
-                        </View>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity>
-                                <LinearGradient
-                                    colors={['#D6BFFF', '#47CECE']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Calendar.png')} style = { component.categoryImage }/>
-                                <Image source = {require('../../assets/img/Check.png')} style = {{ width: 23, height: 23, position: 'absolute', left: 14, bottom: 7, rotate: '-20deg' }}/>
-                                <Image source = {require('../../assets/img/Check.png')} style = {{ width: 40, height: 40, position: 'absolute', right: -4, top: 1 }}/>
-                            </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#9D86DA'} ]}>MONTHLY</Text>
-                        </View>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity>
-                                <LinearGradient
-                                    colors={['#A0FFBA', '#00C268']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Plus.png')} style = { component.categoryImage }/>
-                                <Image source = {require('../../assets/img/Leaf.png')} style = {{ width: 24, height: 24, position: 'absolute', left: 12, top: 27, rotate: '9deg', transform: [{scaleX: -1}] }}/>
-                                <Image source = {require('../../assets/img/Leaf.png')} style = {{ width: 40, height: 40, position: 'absolute', right: -12, top: -15 }}/>
-                            </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#40DB7B'} ]}>HEALTH</Text>
-                        </View>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity>
-                                <LinearGradient
-                                    colors={['#FFFFA0', '#E7A235']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 22, height: 22, position: 'absolute', right: 15, top: 27, rotate: '14deg', transform: [{scaleX: -1}] }}/>
-                                <Image source = {require('../../assets/img/Dollar.png')} style = { component.categoryImage }/>
-                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 19, height: 19, position: 'absolute', left: 28, bottom: 22, rotate: '-8deg' }}/>
-                                <Image source = {require('../../assets/img/Coin.png')} style = {{ width: 40, height: 40, position: 'absolute', left: 26, top: -20 }}/>
-                            </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#F1B83B'} ]}>FINANCIAL</Text>
-                        </View>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity>
-                                <LinearGradient
-                                    colors={['#FFB5B5', '#FF6666']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Heart.png')} style = { component.categoryImage }/>
-                                <Image source = {require('../../assets/img/SmallHeart.png')} style = {{ width: 24, height: 24, position: 'absolute', right: 2, top: 15, rotate: '7deg' }}/>
-                                <Image source = {require('../../assets/img/SmallHeart.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 8, top: 6 }}/>
-                            </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#FF5252'} ]}>LOVE</Text>
-                        </View>
-                        <View style={ part.categoryButton }>
-                            <TouchableOpacity>
-                                <LinearGradient
-                                    colors={['#A0DFFF', '#159DE2']}
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={ component.categoryButton }
-                                />
-                                <Image source = {require('../../assets/img/Case up.png')} style = {{ position: 'absolute', width: '97%', height: '97%', top: -10, right: 1, }}/>
-                                <Image source = {require('../../assets/img/Case down.png')} style = {{ position: 'absolute', width: '90%', height: '90%', bottom: -7, right: 5, }}/>
-                                <Image source = {require('../../assets/img/Docs.png')} style = {{ width: 30, height: 30, position: 'absolute', right: 8, top: 12 }}/>
-                                <Image source = {require('../../assets/img/Docs.png')} style = {{ width: 26, height: 26, position: 'absolute', right: 2, top: 20, rotate: '16deg' }}/>
-                            </TouchableOpacity>
-                            <Text style={[ component.categoryText, {color: '#437FEE'} ]}>CAREER</Text>
-                        </View>
+                        ))}
                     </View>
                 </View>
-
-            </LinearGradient>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#242049",
+        textTransform: 'uppercase',
         alignItems: 'center',
+    },
+    header: {
+        width: '75vw',
+        height: '10vh',
+        marginTop: 60,
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: 600,
         fontFamily: 'JosefinSans',
-        height: '100vh',
+        color: "white",
     },
-    navigation: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        width: 360,
-        height: 50,
-        borderRadius: 20,
-        marginBottom: 40,
+    subtitle: {
+        fontSize: 12,
+        fontFamily: 'JosefinSans',
+        color: "rgba(255, 255, 255, 0.8)",
+        marginTop: 10,
     },
-    personal: {
-        backgroundColor: 'white',
-        width: 360,
-        height: 210,
-        borderRadius: 16,
-        padding: 20,
-        paddingTop: 15,
+    date: {
+        fontSize: 12,
+        color: "white",
+        fontWeight: 500,
+        fontFamily: 'Jost',
+        marginTop: 10,
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: "center",
+        paddingHorizontal: 20,
+        marginBottom: 135,
+    },
+    cardContainer: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    card: {
+        width: '58vw',
+        height: '46vh',
+        backgroundColor: "#D9D9D9",
+        borderRadius: 10,
+        justifyContent: "end",
+        alignItems: "center",
+        position: "absolute",
+        zIndex: 2,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    cardBehind: {
+        width: '58vw',
+        height: '46vh',
+        borderRadius: 10,
+        position: "absolute",
+        zIndex: 1,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    cardTextContainer:{
+        height: 200,
+        alignItems: 'center', 
+        justifyContent: 'space-between',
         marginBottom: 20,
     },
-    category: {
-        backgroundColor: 'white',
-        width: 360,
-        height: 380,
-        borderRadius: 16,
-        padding: 20,
-        paddingTop: 15,
+    cardTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "rgba(0, 0, 0, 0.8)",
     },
-});
-
-const part = StyleSheet.create({
-    personal: {
-        flexDirection: 'row',
+    cardSwipe:{
+        fontSize: 14,
+        fontWeight: 600,
+        color: "rgba(0, 0, 0, 0.6)",
+        marginTop: 50,
     },
-    gender: {
-        flexDirection: 'row',
-        width: 224,
-        marginLeft: -15,
+    cardText: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: "rgba(0, 0, 0, 0.6)",
     },
-    age: {
-        width: 70,
-    },
-    genderButton: {
+    topicContainer: {
+        width: '80vw', 
         alignItems: 'center',
-        width: 60,
-    },
-    skipAnim: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: 118,
-    },
-    category: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    categoryButton: {
-        width: 90,
-    },
-});
 
-const component = StyleSheet.create({
-    name: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: 'white',
-        marginTop: 70,
-        marginBottom: 50,
     },
     topic: {
-        fontSize: 22,
-        fontWeight: 600,
-        color: '#FF676F',
+        flexDirection: "row",
+        gap: 20,
+        alignItems: 'end',
     },
-    subTopic: {
-        fontSize: 12,
-        color: '#5B5B5B',
-        height: 30,
-        marginTop: 10,
+    topicItem: {
+        paddingVertical: 10,
     },
-    navigator: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 180,
-        height: '100%',
-        fontSize: 14,
-        color: '#5B5B5B',
-    },
-    topicLine: {
-        width: 80,
-        height: 2,
-        borderRadius: 100,
-    },
-    line: {
-        height: 30, 
-        width: 1, 
-        backgroundColor: '#E6E6E6', 
-        borderRadius: 100,
-    },
-    genderText: {
-        fontSize: 10,
-        color: '#373737',
-        height: 20,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    genderButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 20,
-        height: 20,
-        backgroundColor: '#EAECF3',
-        borderWidth: 1,
-        borderColor: '#BBBDC2',
-        borderRadius: 4,
-    },
-    innerRadio: {
-        width: '90%',
-        height: '90%',
-        backgroundColor: '#6483FF',
-        borderRadius: '20%',
-    },
-    ageInput: {
-        width: 70,
-        height: 50,
-        backgroundColor: '#EAECF3',
-        borderWidth: 1,
-        borderColor: '#BBBDC2',
-        borderRadius: 6,
-    },
-    info: {
-        fontSize: 10,
-        color: '#FF2323',
-        marginTop: 25,
-    },
-    skipText: {
+    topicText: {
+        fontFamily: 'JosefinSans',
         fontSize: 12,
         fontWeight: 600,
-        color: '#5B5B5B',
+        color: "rgba(255, 255, 255, 0.8)",
     },
-    skipButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 13,
-        height: 13,
-        borderWidth: 1,
-        borderColor: '#999999',
-        borderRadius: 2,
-    },
-    categoryText: {
+    topicTextSelected: {
+        color: "#FFF",
         fontSize: 16,
-        fontWeight: 500,
-        alignSelf: 'center',
-        marginTop: 10,
-        marginBottom: 30,
-        color: 'black',
     },
-    categoryButton: {
-        width: 90,
-        height: 90,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.1)',
-    },
-    categoryImage: {
-        position: 'absolute', 
-        width: 90,
-        height: 90,
+    topicSelected: {
+        borderLeftWidth: 4,
+        borderLeftColor: "#6FC1FF",
+        paddingLeft: 6,
     },
 });
