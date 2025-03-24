@@ -110,6 +110,11 @@ export default function App() {
           component={SignupScreen} 
           options={{ headerShown: false }} 
         />
+        <Stack.Screen
+          name='Horoscope'
+          component={HoroscopeScreen} 
+          options={{ headerShown: false }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

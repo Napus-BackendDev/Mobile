@@ -16,13 +16,7 @@ export default function StoreScreen({ navigation }) {
     >
       {/* Add the header */}
       <View style={ styles.header }>
-        <TouchableOpacity style={{paddingLeft: 20}} onPress={() => navigation.navigate('Home')}>
-          <Image
-            source={require('../../assets/img/Arrow.png')}
-            style={{ width: 23.03, height: 14 }}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Store</Text>
+        <Text style={styles.title}>STORE</Text>
         
       </View>
 
@@ -80,9 +74,7 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans',
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: '5%',
     fontFamily: 'JosefinSans',
   },
   ractangle:{
@@ -122,7 +114,6 @@ const styles = StyleSheet.create({
   title: {
     marginTop: '15%',
     marginBottom: '15%',
-    marginLeft: '25%',
     fontSize: 24,
     color: 'white',
     fontWeight: 'bold',

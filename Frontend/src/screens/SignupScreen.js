@@ -92,7 +92,7 @@ export default function SignupScreen({ navigation }) {
   return (
     <LinearGradient colors={['#FFF','#FFF']} style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('TabNavigator', {screen: 'Profile'})}>
           <Ionicons name="arrow-back" size={30} color={"#3B444D"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.signuptitle}>SIGN UP</Text>

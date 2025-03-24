@@ -132,9 +132,14 @@ export default function HomeScreen({ navigation }) {
                         {...panResponder.panHandlers}
                     >
                         <View style={styles.cardTextContainer}>
-                            <Text style={styles.cardTitle}>{cardContent}</Text>
-                            <Text style={styles.cardSwipe}>SWIPE TO CHANGE</Text>
-                            <Text style={styles.cardText}>TAP TO SELECT</Text>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Horoscope', { title: cardContent })}
+                                style={styles.cardTextContainer}
+                            >
+                                <Text style={styles.cardTitle}>{cardContent}</Text>
+                                <Text style={styles.cardSwipe}>SWIPE TO CHANGE</Text>
+                                <Text style={styles.cardText}>TAP TO SELECT</Text>
+                            </TouchableOpacity>
                         </View>
                     </Animated.View>
                     <View style={[styles.cardBehind, {marginTop: 60, marginRight: 60, transform: [{ rotate: '4deg' }], backgroundColor: "#ADACAC"}]} />
