@@ -4,75 +4,95 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function SignupScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
             'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
     });
     const [username, setUsername] = useState('');
-    const [gmail, setGmail] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const auth=getAuth();
     const signUpWithFacebook = async () => {
     };
     const signUpWithGoogle = async () => {
+       try {
+            const result=await signInWithPopup(auth,provider);
+      
+            const credential=GoogleAuthProvider.credentialFromResult(result);
+            const token=credential.accessToken;
+            const user=result.user;
+            console.log("User  signed in successfully:", user);
+            console.log("Access Token:", token);
+            alert("Logging in Successfully");
+          } catch (error) {
+            console.error("Error during sign-in:", error.code, error.message);
+              
+              if (error.customData) {
+                  const email = error.customData.email;
+                  console.log("Email used:", email);
+              } else {
+                console.log("No email information available.");
+              }
+      
+      
+              const credential = GoogleAuthProvider.credentialFromError(error);
+              console.error("Credential from error:", credential);
+          }
     };
     const handleSignup = async () => {
       const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;//username
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//correct email pattern
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;//password validation
+      
+      try {
          // Check if any field is empty
-          if (!username || !gmail || !password) {
-            Alert.alert('Invalid Input', 'Please fill all fields');
+         if (!username || !email || !password) {
+          alert('Invalid Input', 'Please fill all fields');
+          return;
+        }
+        // Validate username first
+        if (!usernameRegex.test(username)) {
+            alert(
+                'Invalid Username',
+                'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
+            );
             return;
-          }
-          // Validate username first
-          if (!usernameRegex.test(username)) {
-              Alert.alert(
-                  'Invalid Username',
-                  'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
-              );
-              return;
-          }
-          // Validate email
-          if (!emailRegex.test(gmail)) {
-              Alert.alert('Invalid Email', 'Please enter a valid email address');
-              return;
-          }
-          // Validate password
-          if (!passwordRegex.test(password)) {
-              Alert.alert(
-                  'Weak Password',
-                  'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
-              );
-              return;
-          }
+        }
+        // Validate email
+        if (!emailRegex.test(email)) {
+            alert('Invalid Email', 'Please enter a valid email address');
+            return;
+        }
+        // Validate password
+        if (!passwordRegex.test(password)) {
+            alert(
+                'Weak Password',
+                'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
+            );
+            return;
+        }
+        const userCredential=await createUserWithEmailAndPassword(auth, email, password)
+        const user=userCredential.user;
+        console.log(user);
+        // navigation.navigate("Home");
+        
+      } catch (error) {
+        alert("Signing up failed!");
+        console.log(error);
+        
+      }
+  
 
 
-    // try {
-    //   const response = await fetch('https://backend-api.com/api/user/signup', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ username, gmail, password })
-    //   });
-
-    //   const data = await response.json();
-    //   if (response.ok) {
-    //     Alert.alert('Success', 'Signup successful!');
-    //     console.log(data);
-    //     // navigation.navigate("HomeScreen")
-    //   } else {
-    //     Alert.alert('Error', data.message || 'Signup failed');
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   Alert.alert('Error', 'Something went wrong. Please try again.');
-    // }
+    
     };
 
   return (
     <LinearGradient colors={['#FFF','#FFF']} style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color={"#3B444D"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.signuptitle}>SIGN UP</Text>
@@ -84,7 +104,7 @@ export default function SignupScreen({ navigation }) {
 
         <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/EmailIcons.png')} style={styles.mailicon} />
-          <TextInput style={styles.input} placeholder="GMAIL" value={gmail} onChangeText={setGmail} />
+          <TextInput style={styles.input} placeholder="EMAIL" value={email} onChangeText={setEmail} />
         </View>
 
         <View style={[styles.inputContainer, styles.shadow]}>

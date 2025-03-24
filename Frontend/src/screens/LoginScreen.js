@@ -6,6 +6,7 @@ import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import { auth  } from '../../firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth,signInWithPopup,GoogleAuthProvider } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -14,72 +15,81 @@ export default function LoginScreen({ navigation }) {
     const [username,setUsername]=useState('');
     const [gmail,setGmail]=useState('');
     const [password,setPassword]=useState('');
-    const signInWithFacebook = async () => {
+    const auth=getAuth();
+    const provider = new GoogleAuthProvider();
+    
+
+  const signInWithFacebook = async () => {
 
   };
   const signInWithGoogle = async () => {
+    try {
+      const result=await signInWithPopup(auth,provider);
 
+      const credential=GoogleAuthProvider.credentialFromResult(result);
+      const token=credential.accessToken;
+      const user=result.user;
+      console.log("User  signed in successfully:", user);
+      console.log("Access Token:", token);
+      alert("Logging in Successfully");
+    } catch (error) {
+      console.error("Error during sign-in:", error.code, error.message);
+        
+        if (error.customData) {
+            const email = error.customData.email;
+            console.log("Email used:", email);
+        } else {
+          console.log("No email information available.");
+        }
+
+
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.error("Credential from error:", credential);
+    }
   }
   const handleLogin = async () => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
     try {
-      // await signInWithEmailAndPassword(auth, gmail, password);
-      Alert.alert('Success', 'Login successful!');
-      navigation.navigate("ProfileLogIned");
+
+          // Check if any field is empty
+        if (!username || !gmail || !password) {
+          alert('Invalid Input', 'Please fill all fields');
+          return;
+        }
+
+        // Validate username first
+        if (!usernameRegex.test(username)) {
+            alert(
+                'Invalid Username',
+                'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
+            );
+            return;
+        }
+
+        // Validate email
+        if (!emailRegex.test(gmail)) {
+            alert('Invalid Email', 'Please enter a valid email address');
+            return;
+        }
+
+        // Validate password
+        if (!passwordRegex.test(password)) {
+            alert(
+                'Weak Password',
+                'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
+            );
+            return;
+        }
+      await signInWithEmailAndPassword(auth, gmail, password);
+      alert('Success', 'Login successful!');
+      console.log("Login Successful!")
+      // navigation.navigate("Home");
     } catch (error) {
+      alert("Logging in failed!");
       console.log(error);
     }
-
-    
-
-       // Check if any field is empty
-    if (!username || !gmail || !password) {
-      Alert.alert('Invalid Input', 'Please fill all fields');
-      return;
-    }
-
-    // Validate username first
-    if (!usernameRegex.test(username)) {
-        Alert.alert(
-            'Invalid Username',
-            'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
-        );
-        return;
-    }
-
-    // Validate email
-    if (!emailRegex.test(gmail)) {
-        Alert.alert('Invalid Email', 'Please enter a valid email address');
-        return;
-    }
-
-    // Validate password
-    if (!passwordRegex.test(password)) {
-        Alert.alert(
-            'Weak Password',
-            'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
-        );
-        return;
-    }
-
-    // try{
-    //   const response=await fetch('http://backend-url/login',{
-    //     method:'POST',
-    //     headers: {'Content-Type':'application/json'},
-    //     body: JSON.stringify({username,gmail,password})
-    //   });
-    //   const data=await response.json();
-    //   if(response.ok){
-    //     Alert.alert('Success','Login successful!');
-    //     console.log(data);
-    //     // navigation.navigate("HomeScreen");
-    //   }else{
-    //     Alert.alert('Error', data.message || 'Login failed','Try again!')
-    //   }
-
-    // } catch (error){
-    //   console.log(error);
-    //   Alert.alert('Error','Something went wrong.Please try again.')
-    // }
   };
 
   return (
@@ -90,7 +100,7 @@ export default function LoginScreen({ navigation }) {
     end={{ x: 1, y: 1 }}
     style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color={"white"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.logintitle}>LOG IN</Text>
@@ -131,7 +141,7 @@ export default function LoginScreen({ navigation }) {
           <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signInWithFacebook}>
             <Image source={require('../../assets/Icons/facebook.png')} style={styles.socialIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signInWithGoogle}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={()=>signInWithGoogle()}>
             <Image source={require('../../assets/Icons/google.png')} style={styles.socialIcon} />
           </TouchableOpacity>
         </View>
