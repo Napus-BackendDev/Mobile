@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
-import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
-import { auth  } from '../../firebaseConfig';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { getAuth,signInWithPopup,GoogleAuthProvider } from "firebase/auth";
+import { Platform } from "react-native";
+import { getAuth } from 'firebase/auth';
+
+// Add these imports at the top
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+
+// Add this line before the component
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -15,38 +20,50 @@ export default function LoginScreen({ navigation }) {
     const [username,setUsername]=useState('');
     const [gmail,setGmail]=useState('');
     const [password,setPassword]=useState('');
+
+
     const auth=getAuth();
-    const provider = new GoogleAuthProvider();
+    
     
 
   const signInWithFacebook = async () => {
 
   };
-  const signInWithGoogle = async () => {
-    try {
-      const result=await signInWithPopup(auth,provider);
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
+    androidClientId: "585901648555-2vp1u0f89h3dj9rdq8top34vf27k54us.apps.googleusercontent.com",
+    expoClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
+    scopes: ['profile', 'email'],
+    redirectUri: Platform.select({
+        web: "http://localhost:8081/",
+        android: "exp://172.25.231.242:8081"
+    }),
+    useProxy: true
+});
 
-      const credential=GoogleAuthProvider.credentialFromResult(result);
-      const token=credential.accessToken;
-      const user=result.user;
-      console.log("User  signed in successfully:", user);
-      console.log("Access Token:", token);
-      alert("Logging in Successfully");
-    } catch (error) {
-      console.error("Error during sign-in:", error.code, error.message);
-        
-        if (error.customData) {
-            const email = error.customData.email;
-            console.log("Email used:", email);
-        } else {
-          console.log("No email information available.");
-        }
-
-
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        console.error("Credential from error:", credential);
+useEffect(() => {
+    if (response?.type === 'success') {
+        const { authentication } = response;
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${authentication.accessToken}` }
+        })
+        .then(response => response.json())
+        .then(userInfo => {
+            console.log('User Info:', userInfo);
+            navigation.navigate('Home');
+        })
+        .catch(error => {
+            console.error("Error fetching user info:", error);
+        });
     }
+}, [response]);
+  const signInWithGoogle = async () => {
+  try {
+      await promptAsync();
+  } catch (error) {
+      console.error("Google Sign-In Error:", error);
   }
+  };
   const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
@@ -100,7 +117,7 @@ export default function LoginScreen({ navigation }) {
     end={{ x: 1, y: 1 }}
     style={styles.container}>
       <View style={styles.pageContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('TabNavigator', {screen: 'Profile'})}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color={"white"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.logintitle}>LOG IN</Text>
@@ -147,9 +164,20 @@ export default function LoginScreen({ navigation }) {
         </View>
 
         <View style={styles.bottomText}>
-          <Text style={{ fontSize: 12, fontWeight: 600, color: '#3B444D', fontFamily: 'JosefinSans', }}>DON'T HAVE AN ACCOUNT?</Text>
+          <Text style={{ 
+            fontSize: 12, 
+            fontWeight: '600', // Change from 600 to '600'
+            color: '#3B444D', 
+            fontFamily: 'JosefinSans'
+          }}>
+            DON'T HAVE AN ACCOUNT?
+          </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.loginlinkText}>SIGN UP</Text>
+            <Text style={[styles.loginlinkText, {
+              fontWeight: '600' // Change from 600 to '600'
+            }]}>
+              SIGN UP
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

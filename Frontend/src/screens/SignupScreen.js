@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { Platform } from "react-native";
 
+// Add these imports at the top
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+
+WebBrowser.maybeCompleteAuthSession();
 export default function SignupScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
             'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
@@ -16,31 +22,41 @@ export default function SignupScreen({ navigation }) {
     const auth=getAuth();
     const signUpWithFacebook = async () => {
     };
+    const [request, response, promptAsync] = Google.useAuthRequest({
+      webClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
+      androidClientId: "585901648555-2vp1u0f89h3dj9rdq8top34vf27k54us.apps.googleusercontent.com",
+      expoClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
+      scopes: ['profile', 'email'],
+      redirectUri: Platform.select({
+          web: "http://localhost:8081/",
+          android: "exp://172.25.231.242:8081"
+      }),
+      useProxy: true
+    });
+
+    useEffect(() => {
+      if (response?.type === 'success') {
+          const { authentication } = response;
+          fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { Authorization: `Bearer ${authentication.accessToken}` }
+          })
+          .then(response => response.json())
+          .then(userInfo => {
+              console.log('User Info:', userInfo);
+              navigation.navigate('Home');
+          })
+          .catch(error => {
+              console.error("Error fetching user info:", error);
+          });
+      }
+    }, [response]);
     const signUpWithGoogle = async () => {
-       try {
-            const result=await signInWithPopup(auth,provider);
-      
-            const credential=GoogleAuthProvider.credentialFromResult(result);
-            const token=credential.accessToken;
-            const user=result.user;
-            console.log("User  signed in successfully:", user);
-            console.log("Access Token:", token);
-            alert("Logging in Successfully");
-          } catch (error) {
-            console.error("Error during sign-in:", error.code, error.message);
-              
-              if (error.customData) {
-                  const email = error.customData.email;
-                  console.log("Email used:", email);
-              } else {
-                console.log("No email information available.");
-              }
-      
-      
-              const credential = GoogleAuthProvider.credentialFromError(error);
-              console.error("Credential from error:", credential);
-          }
-    };
+      try {
+          await promptAsync();
+      } catch (error) {
+          console.error("Google Sign-In Error:", error);
+      }
+      };
     const handleSignup = async () => {
       const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;//username
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//correct email pattern
