@@ -1,27 +1,41 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Image } from 'react-native';
 
+// Set default value
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = 104;
 const CARD_HEIGHT = 180;
-const VISIBLE_CARDS = 5;
 
 export default function HoroscopeScreen({ navigation, route }) {
   const { title } = route.params;
-  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
+  const scollViewRef = useRef(null);
 
   // Generate 78 cards
   const cards = Array.from({ length: 78 }, (_, index) => ({
     id: index,
     title: `Card ${index + 1}`
   }));
-
+  
+  // Update x screen value everytime user scoll
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: true }
+    { useNativeDriver: true },
   );
+  
+  // Event when user click card
+  const handleClick = (position) => { 
+    console.log(scrollX._value);
+    console.log(position);
 
+    // Check if card is in the middle of screen
+    if ((scrollX._value === position[1]) | (scrollX._value < position[1] + 30 && scrollX._value > position[2] - 30) | (scrollX._value > position[1] - 30 && scrollX._value < position[0] + 30)) {
+      navigation.navigate('TabNavigator') // Card is in middle // Later change to Result Page
+    } else {
+      scollViewRef.current.scrollTo({ x: position[1], animated: true }) // Scroll screen to make card is in middle
+    }
+  };
+  
   const getInputRange = (index) => {
     const range = [];
     for (let i = -1; i <= 1; i++) {
@@ -40,6 +54,7 @@ export default function HoroscopeScreen({ navigation, route }) {
       <View style={styles.cardsWrapper}>
         <Animated.ScrollView
           horizontal
+          ref={scollViewRef}
           showsHorizontalScrollIndicator={false}
           snapToInterval={CARD_WIDTH}
           decelerationRate="fast"
@@ -53,6 +68,7 @@ export default function HoroscopeScreen({ navigation, route }) {
           ]}
           onScroll={handleScroll}
         >
+          {/* Loop card */}
           {cards.map((card, index) => {
             const inputRange = getInputRange(index);
             
@@ -61,11 +77,18 @@ export default function HoroscopeScreen({ navigation, route }) {
               outputRange: [0.8, 1, 0.8],
               extrapolate: 'clamp',
             });
+            
+            const border = scrollX.interpolate({
+              inputRange,
+              outputRange: [0, 4, 0],
+              extrapolate: 'clamp',
+            });
 
             return (
+              // Card
               <TouchableOpacity
                 key={card.id}
-                onPress={() => setCurrentIndex(index)}
+                onPress={() => handleClick(inputRange)}
                 style={styles.cardWrapper}
               >
                 <Animated.View
@@ -75,6 +98,8 @@ export default function HoroscopeScreen({ navigation, route }) {
                       transform: [
                         { scale },
                       ],
+                      borderWidth: border,
+                      borderColor: '#D75EDD',
                     },
                   ]}
                 >
@@ -149,6 +174,7 @@ const styles = StyleSheet.create({
   },
   cardsWrapper: {
     width: width,
+    height: '50%',
     overflow: 'hidden',
   },
   scrollContent: {
@@ -156,6 +182,7 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     width: CARD_WIDTH,
+    justifyContent: 'center',
     margin: 0,
     padding: 0,
   },
