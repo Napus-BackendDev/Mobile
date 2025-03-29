@@ -2,16 +2,12 @@ import React, { useState,useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
-import { Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { Platform } from "react-native";
 
-// Add these imports at the top
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
 
-WebBrowser.maybeCompleteAuthSession();
+
+
 export default function SignupScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
             'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
@@ -19,44 +15,7 @@ export default function SignupScreen({ navigation }) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const auth=getAuth();
-    const signUpWithFacebook = async () => {
-    };
-    const [request, response, promptAsync] = Google.useAuthRequest({
-      webClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
-      androidClientId: "585901648555-2vp1u0f89h3dj9rdq8top34vf27k54us.apps.googleusercontent.com",
-      expoClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
-      scopes: ['profile', 'email'],
-      redirectUri: Platform.select({
-          web: "http://localhost:8081/",
-          android: "exp://172.25.231.242:8081"
-      }),
-      useProxy: true
-    });
-
-    useEffect(() => {
-      if (response?.type === 'success') {
-          const { authentication } = response;
-          fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-              headers: { Authorization: `Bearer ${authentication.accessToken}` }
-          })
-          .then(response => response.json())
-          .then(userInfo => {
-              console.log('User Info:', userInfo);
-              navigation.navigate('Home');
-          })
-          .catch(error => {
-              console.error("Error fetching user info:", error);
-          });
-      }
-    }, [response]);
-    const signUpWithGoogle = async () => {
-      try {
-          await promptAsync();
-      } catch (error) {
-          console.error("Google Sign-In Error:", error);
-      }
-      };
+    
     const handleSignup = async () => {
       const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;//username
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//correct email pattern
@@ -92,6 +51,7 @@ export default function SignupScreen({ navigation }) {
         const userCredential=await createUserWithEmailAndPassword(auth, email, password)
         const user=userCredential.user;
         console.log(user);
+        alert("Sign up successful!");
         // navigation.navigate("Home");
         
       } catch (error) {
@@ -128,9 +88,7 @@ export default function SignupScreen({ navigation }) {
           <TextInput style={styles.input} placeholder="PASSWORD" secureTextEntry={true} value={password} onChangeText={setPassword} />
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.signupforgot}>FORGOT PASSWORD</Text>
-        </TouchableOpacity>
+        
 
         <TouchableOpacity style={styles.signup} onPress={handleSignup}>
           <Text style={styles.signupbuttonText}>SIGN UP</Text>
@@ -144,10 +102,10 @@ export default function SignupScreen({ navigation }) {
 
 
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signUpWithFacebook}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={()=>signUpWithFacebook()}>
             <Image source={require('../../assets/Icons/facebook.png')} style={styles.socialIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signUpWithGoogle}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={()=>signUpWithGoogle()}>
             <Image source={require('../../assets/Icons/google.png')} style={styles.socialIcon} />
           </TouchableOpacity>
         </View>
@@ -228,19 +186,6 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans',
     fontWeight: 'bold',
   },
-  forgotPassword: {
-    alignSelf: 'center',
-    marginTop: -20,
-    marginBottom: 30,
-    fontFamily: 'JosefinSans',
-    
-  },
-  signupforgot:{
-    color:"#FF6961",
-    fontFamily: 'JosefinSans',
-    fontWeight:"bold",
-  },
-
   signup: {
     backgroundColor: '#FF6961',
     padding: 15,

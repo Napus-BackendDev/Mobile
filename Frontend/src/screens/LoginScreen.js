@@ -1,73 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from 'expo-font';
-import { Platform } from "react-native";
-import { getAuth } from 'firebase/auth';
-
-// Add these imports at the top
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-
-// Add this line before the component
-WebBrowser.maybeCompleteAuthSession();
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
           'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
     });
+    
     const [username,setUsername]=useState('');
     const [gmail,setGmail]=useState('');
     const [password,setPassword]=useState('');
-
-
-    const auth=getAuth();
     
+    // Add this function to handle password reset
+    const handleForgotPassword = () => {
+        if (!gmail) {
+            alert('Email Required', 'Please enter your email address to reset your password');
+            return;
+        }
+        
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(gmail)) {
+            alert('Invalid Email', 'Please enter a valid email address');
+            return;
+        }
+        
+        sendPasswordResetEmail(auth, gmail)
+            .then(() => {
+                alert(
+                    'Password Reset Email Sent', 
+                    'Check your email for instructions to reset your password'
+                );
+            })
+            .catch((error) => {
+                console.error("Error sending password reset email:", error);
+                alert('Error', 'Failed to send password reset email. Please try again.');
+            });
+    };
     
-
-  const signInWithFacebook = async () => {
-
-  };
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
-    androidClientId: "585901648555-2vp1u0f89h3dj9rdq8top34vf27k54us.apps.googleusercontent.com",
-    expoClientId: "585901648555-jq40oshn285ps4v0u5plbvdc1e4q9b2b.apps.googleusercontent.com",
-    scopes: ['profile', 'email'],
-    redirectUri: Platform.select({
-        web: "http://localhost:8081/",
-        android: "exp://172.25.231.242:8081"
-    }),
-    useProxy: true
-});
-
-useEffect(() => {
-    if (response?.type === 'success') {
-        const { authentication } = response;
-        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { Authorization: `Bearer ${authentication.accessToken}` }
-        })
-        .then(response => response.json())
-        .then(userInfo => {
-            console.log('User Info:', userInfo);
-            navigation.navigate('Home');
-        })
-        .catch(error => {
-            console.error("Error fetching user info:", error);
-        });
-    }
-}, [response]);
-  const signInWithGoogle = async () => {
-  try {
-      await promptAsync();
-  } catch (error) {
-      console.error("Google Sign-In Error:", error);
-  }
-  };
-  const handleLogin = async () => {
+    const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+    const passwordRegex = /^[A-Za-z0-9]{8,20}$/;
     try {
 
           // Check if any field is empty
@@ -137,7 +115,7 @@ useEffect(() => {
           <TextInput style={styles.input} placeholder="PASSWORD" secureTextEntry={true} value={password} onChangeText={setPassword} />
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
+        <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
           <Text style={styles.loginforgot}>FORGOT PASSWORD</Text>
         </TouchableOpacity>
 
@@ -155,12 +133,13 @@ useEffect(() => {
 
 
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={signInWithFacebook}>
+          <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={()=>signInWithFacebook()}>
             <Image source={require('../../assets/Icons/facebook.png')} style={styles.socialIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.socialButton, styles.shadow]} onPress={()=>signInWithGoogle()}>
             <Image source={require('../../assets/Icons/google.png')} style={styles.socialIcon} />
           </TouchableOpacity>
+          
         </View>
 
         <View style={styles.bottomText}>
