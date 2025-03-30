@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Animated, PanResponder, Image } from "react-native";
 import { useFonts } from 'expo-font';
 
@@ -7,22 +7,24 @@ export default function HomeScreen({ navigation }) {
         'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
         'Jost': require('../../assets/fonts/Jost.ttf'),
     });
-
+    
     const [selectedTopic, setSelectedTopic] = useState("Daily");
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [cardContent, setCardContent] = useState("Daily");
-    const [currentArray, setCurrentArray] = useState("timeFrame");
+    const topicRef = useRef(selectedTopic);
+    const indexRef = useRef(currentIndex);
     const pan = useRef(new Animated.ValueXY()).current;
     const rotate = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(1)).current;
-
+    
     const timeFrame = ["Daily", "Monthly"];
     const lifeAspect = ["Love", "Financial", "Health", "Career"];
+    const topicArray = [...timeFrame, ...lifeAspect];
     const date = new Date();
 
-    const getCurrentArray = () => {
-        return currentArray === "timeFrame" ? timeFrame : lifeAspect;
-    };
+    useEffect(() => {
+        topicRef.current = selectedTopic;
+        indexRef.current = currentIndex;
+    }, [topicRef, currentIndex]); 
 
     const panResponder = useRef(
         PanResponder.create({
@@ -32,59 +34,30 @@ export default function HomeScreen({ navigation }) {
                 { useNativeDriver: false }
             ),
             onPanResponderRelease: (e, gesture) => {
-                if (Math.abs(gesture.dx) > 100) {
+                if (Math.abs(gesture.dx) > 290) {
                     const direction = gesture.dx > 0 ? -1 : 1;
-                    const currentArray = getCurrentArray();
-                    const newIndex = currentIndex + direction;
-                    
+
                     // Animate card to back
-                    Animated.parallel([
-                        Animated.timing(pan.x, {
-                            toValue: direction * 500,
-                            duration: 300,
-                            useNativeDriver: false
-                        }),
-                        Animated.timing(rotate, {
-                            toValue: direction * 30,
-                            duration: 300,
-                            useNativeDriver: false
-                        }),
-                        Animated.timing(scale, {
-                            toValue: 0.8,
-                            duration: 300,
-                            useNativeDriver: false
-                        })
-                    ]).start(() => {
+                    Animated.timing(pan.x, {
+                        toValue: direction,
+                        duration: 300,
+                        useNativeDriver: false
+                    }).start(() => {
                         // Reset card position
                         pan.setValue({ x: 0, y: 0 });
-                        rotate.setValue(0);
-                        scale.setValue(1);
 
-                        // Handle array switching and index updates
-                        if (newIndex >= currentArray.length) {
-                            // Switch to lifeAspect if we're at the end of timeFrame
-                            setCurrentArray("lifeAspect");
-                            setCurrentIndex(0);
-                            setSelectedTopic(lifeAspect[0]);
-                            setCardContent(lifeAspect[0]);
-                        } else if (newIndex < 0) {
-                            if (currentArray === "lifeAspect") {
-                                // Switch back to timeFrame if we're at the start of lifeAspect
-                                setCurrentArray("timeFrame");
-                                setCurrentIndex(timeFrame.length - 1);
-                                setSelectedTopic(timeFrame[timeFrame.length - 1]);
-                                setCardContent(timeFrame[timeFrame.length - 1]);
-                            } else {
-                                // Stay at the beginning of timeFrame
-                                setCurrentIndex(0);
-                                setSelectedTopic(timeFrame[0]);
-                                setCardContent(timeFrame[0]);
-                            }
-                        } else {
-                            // Normal case - stay in current array
+                        // Handle array and index updates
+                        if (direction === 1) {
+                            const newIndex = (indexRef.current + 1) % 6;
+                            setSelectedTopic(topicArray[newIndex]);
                             setCurrentIndex(newIndex);
-                            setSelectedTopic(currentArray[newIndex]);
-                            setCardContent(currentArray[newIndex]);
+                        } else {
+                            let newIndex = (indexRef.current - 1) % 6;
+                            if (newIndex === -1) {
+                                newIndex = 5;
+                            }
+                            setSelectedTopic(topicArray[newIndex]);
+                            setCurrentIndex(newIndex);
                         }
                     });
                 } else {
@@ -97,13 +70,14 @@ export default function HomeScreen({ navigation }) {
             }
         })
     ).current;
-
-    const handleTopicSelect = (topic, index) => {
-        const array = timeFrame.includes(topic) ? "timeFrame" : "lifeAspect";
-        setCurrentArray(array);
+    
+    const handleTopicSelect = (topic) => {
         setSelectedTopic(topic);
-        setCurrentIndex(index);
-        setCardContent(topic);
+        topicArray.map((topics, index) => {
+            if (topics === topic) {
+                setCurrentIndex(index);
+            } 
+        })
     };
 
     return (
@@ -119,13 +93,13 @@ export default function HomeScreen({ navigation }) {
                         style={[
                             styles.card,
                             {
+                                zIndex: pan.x.interpolate({
+                                    inputRange: [-290, 0, 290],
+                                    outputRange: [-1, 2, -1],
+                                    extrapolate: 'clamp',
+                                }),
                                 transform: [
                                     { translateX: pan.x },
-                                    { rotate: rotate.interpolate({
-                                        inputRange: [-30, 0, 30],
-                                        outputRange: ['-30deg', '0deg', '30deg']
-                                    })},
-                                    { scale: scale }
                                 ]
                             }
                         ]}
@@ -133,10 +107,10 @@ export default function HomeScreen({ navigation }) {
                     >
                         <View style={styles.cardTextContainer}>
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('Horoscope', { title: cardContent })}
+                                onPress={() => navigation.navigate('Horoscope', { title: selectedTopic })}
                                 style={styles.cardTextContainer}
                             >
-                                <Text style={styles.cardTitle}>{cardContent}</Text>
+                                <Text style={styles.cardTitle}>{selectedTopic}</Text>
                                 <Text style={styles.cardSwipe}>SWIPE TO CHANGE</Text>
                                 <Text style={styles.cardText}>TAP TO SELECT</Text>
                             </TouchableOpacity>
@@ -148,10 +122,9 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 <View style={styles.topicContainer}>
                     <View style={styles.topic}>
-                        {timeFrame.map((topic, index) => (
+                        {timeFrame.map((topic) => (
                             <TouchableOpacity
-                                key={index}
-                                onPress={() => handleTopicSelect(topic, index)}
+                                onPress={() => handleTopicSelect(topic)}
                                 style={styles.topicItem}
                             >
                                 <Text style={[styles.topicText, selectedTopic === topic && styles.topicTextSelected]}>
@@ -161,10 +134,9 @@ export default function HomeScreen({ navigation }) {
                         ))}
                     </View>
                     <View style={styles.topic}>
-                        {lifeAspect.map((topic, index) => (
+                        {lifeAspect.map((topic) => (
                             <TouchableOpacity
-                                key={index}
-                                onPress={() => handleTopicSelect(topic, index)}
+                                onPress={() => handleTopicSelect(topic)}
                                 style={styles.topicItem}
                             >
                                 <Text style={[styles.topicText, selectedTopic === topic && styles.topicTextSelected]}>
