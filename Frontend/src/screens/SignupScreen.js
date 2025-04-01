@@ -3,66 +3,87 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from 'expo-font';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-
-
+import {  createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDocs, collection, query, where } from "firebase/firestore";
+import { auth, db } from '../../firebaseConfig';
 
 export default function SignupScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
             'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
     });
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
+    const [gmail, setGmail] = useState('');
     const [password, setPassword] = useState('');
     
     const handleSignup = async () => {
-      const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;//username
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;//correct email pattern
-      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;//password validation
-      
-      try {
-         // Check if any field is empty
-         if (!username || !email || !password) {
-          alert('Invalid Input', 'Please fill all fields');
-          return;
-        }
-        // Validate username first
-        if (!usernameRegex.test(username)) {
-            alert(
-                'Invalid Username',
-                'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
-            );
-            return;
-        }
-        // Validate email
-        if (!emailRegex.test(email)) {
-            alert('Invalid Email', 'Please enter a valid email address');
-            return;
-        }
-        // Validate password
-        if (!passwordRegex.test(password)) {
-            alert(
-                'Weak Password',
-                'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
-            );
-            return;
-        }
-        const userCredential=await createUserWithEmailAndPassword(auth, email, password)
-        const user=userCredential.user;
-        console.log(user);
-        alert("Sign up successful!");
-        // navigation.navigate("Home");
+        const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordRegex = /^[A-Za-z0-9]{8,20}$/;
         
-      } catch (error) {
-        alert("Signing up failed!");
-        console.log(error);
+        try {
+            // Check if any field is empty
+            if (!username || !gmail || !password) {
+                alert('Invalid Input', 'Please fill all fields');
+                return;
+            }
+            // Validate username first
+            if (!usernameRegex.test(username)) {
+                alert(
+                    'Invalid Username',
+                    'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
+                );
+                return;
+            }
+            // Validate email
+            if (!emailRegex.test(gmail)) {
+                alert('Invalid Email', 'Please enter a valid email address');
+                return;
+            }
+            // Validate password
+            if (!passwordRegex.test(password)) {
+                alert(
+                    'Weak Password',
+                    'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.'
+                );
+                return;
+            }
+            // Check if username or email already exists
+            const usernameQuery = query(collection(db, "User"), where("username", "==", username));
+            const emailQuery = query(collection(db, "User"), where("email", "==", gmail));
+            
+            const [usernameSnapshot, emailSnapshot] = await Promise.all([
+                getDocs(usernameQuery),
+                getDocs(emailQuery)
+            ]);
         
-      }
-  
-
-
-    
+            if (!usernameSnapshot.empty) {
+                alert('Username Taken', 'This username is already in use');
+                return;
+            }
+        
+            if (!emailSnapshot.empty) {
+                alert('Email Taken', 'This email is already registered');
+                return;
+            }
+        
+            // If no conflicts, proceed with registration
+            const userCredential = await createUserWithEmailAndPassword(auth, gmail, password);
+            const user = userCredential.user;
+            
+            await setDoc(doc(db, "User", user.uid), {
+                email: gmail,
+                username: username,
+                profileImg: null  
+            });
+        
+            alert('Success', 'Signup successful!');
+            console.log("Signup Successful!");
+            navigation.navigate("ProfileLogIned",{userId:user.uid});
+            
+        } catch (error) {
+            alert("Signing up failed!");
+            console.log(error);
+        }
     };
 
   return (
@@ -80,7 +101,7 @@ export default function SignupScreen({ navigation }) {
 
         <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/EmailIcons.png')} style={styles.mailicon} />
-          <TextInput style={styles.input} placeholder="EMAIL" value={email} onChangeText={setEmail} />
+          <TextInput style={styles.input} placeholder="EMAIL" value={gmail} onChangeText={setGmail} />
         </View>
 
         <View style={[styles.inputContainer, styles.shadow]}>

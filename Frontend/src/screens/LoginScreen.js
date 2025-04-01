@@ -5,8 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from 'expo-font';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
-
+import { auth,db } from '../../firebaseConfig';
+import { doc, setDoc, getDoc } from "firebase/firestore";
 export default function LoginScreen({ navigation }) {
     const [fontsLoaded] = useFonts({
           'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
@@ -77,15 +77,37 @@ export default function LoginScreen({ navigation }) {
             );
             return;
         }
-      await signInWithEmailAndPassword(auth, gmail, password);
-      alert('Success', 'Login successful!');
-      console.log("Login Successful!")
-      // navigation.navigate("Home");
+        // First, sign in with email and password
+        const userCredential = await signInWithEmailAndPassword(auth, gmail, password);
+        const user = userCredential.user;
+
+        // Get the user document from Firestore
+        const userDoc = await getDoc(doc(db, "User", user.uid));
+        
+        if (userDoc.exists()) {
+            // Check if the entered username matches the one in database
+            if (userDoc.data().username !== username) {
+                alert('Invalid Username', 'Username does not match our records');
+                return;
+            }
+            // Don't update the document if it already exists
+            console.log("Login Successful!");
+        } else {
+            // Only create a new document if it doesn't exist
+            await setDoc(doc(db, "User", user.uid), {
+                email: gmail,
+                username: username,
+                profileImg: null,
+            });
+            console.log("New user document created!");
+        }
+
+        navigation.navigate("ProfileLogIned", { userId: user.uid });
     } catch (error) {
-      alert("Logging in failed!");
-      console.log(error);
+        alert("You need to Sign Up,If you don't have Account!");
+        console.log(error);
     }
-  };
+};
 
   return (
     <LinearGradient

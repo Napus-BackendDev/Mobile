@@ -115,6 +115,11 @@ export default function App() {
           component={HoroscopeScreen} 
           options={{ headerShown: false }} 
         />
+        <Stack.Screen
+          name='ProfileLogIned'
+          component={ProfileLogInedScreen} 
+          options={{ headerShown: false }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
