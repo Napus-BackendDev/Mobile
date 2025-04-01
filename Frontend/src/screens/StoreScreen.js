@@ -8,22 +8,11 @@ export default function StoreScreen({ navigation }) {
   });
 
   return (
-    <LinearGradient
-      colors={['#EFB6C8', '#8B87CC', '#EFB6C8']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.background}
-    >
+    <View style={ styles.background }>
       {/* Add the header */}
       <View style={ styles.header }>
         <Text style={styles.title}>STORE</Text>
         
-      </View>
-
-      <View style={styles.ractangle}>
-            <View style={styles.adsRemove}><TouchableOpacity><Text>Ads Removal</Text></TouchableOpacity></View>
-            <View style={styles.line}>|</View>
-            <View style={styles.tarotDesign}><TouchableOpacity><Text>Tarot Design</Text></TouchableOpacity></View>
       </View>
 
       {/* Add the profile */}     
@@ -63,7 +52,7 @@ export default function StoreScreen({ navigation }) {
 
       </View>
       
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -72,44 +61,11 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     fontFamily: 'JosefinSans',
+    backgroundColor: "#242049",
   },
   header: {
     alignItems: 'center',
     fontFamily: 'JosefinSans',
-  },
-  ractangle:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'center',
-    backgroundColor:"#FFF",
-    alignSelf:'center',
-    width:'80%', 
-    borderRadius:15,
-    marginBottom:'5%'
-    
-  },
-  adsRemove:{
-    // padding:'2%',
-    marginTop:15,
-    marginBottom:15,
-    marginLeft:25,
-    marginRight:30,
-    fontFamily:'JosefinSans',
-    fontSize:'2rem'
-  },
-  tarotDesign:{
-    // padding:'2%',
-    marginTop:15,
-    marginBottom:15,
-    marginRight:20,
-    marginLeft:30,
-    fontFamily:'JosefinSans',
-    fontSize:'2rem'
-  },
-  line:{
-    // margin:'5%',
-    alignSelf:'center'
-    
   },
   title: {
     marginTop: '15%',
@@ -131,7 +87,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 678 ,
     height: 1225,
-    backgroundColor: 'white',
+    backgroundColor: '#FEFDFD',
     borderTopLeftRadius: 500,
     borderTopRightRadius: 500,
     // inside
@@ -141,7 +97,7 @@ const styles = StyleSheet.create({
     borderRadius:20,
     height:'20%',
     width:'50%',
-    marginTop:'12%'
+    marginTop:'8%'
   },
   element0:{
     display:'flex',

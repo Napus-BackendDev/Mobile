@@ -8,12 +8,7 @@ export default function ProfileScreen({ navigation }) {
   });
 
   return (
-    <LinearGradient
-      colors={['#EFB6C8', '#8B87CC', '#EFB6C8']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.background}
-    >
+    <View style={ styles.background }>
       {/* Add the header */}
       <View style={ styles.header }>
         <Text style={styles.title}>PROFILE</Text>
@@ -39,7 +34,7 @@ export default function ProfileScreen({ navigation }) {
 
       </View>
       
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -48,6 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     fontFamily: 'JosefinSans',
+    backgroundColor: "#242049",
   },
   header: {
     alignItems: 'center',
@@ -72,7 +68,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 678 ,
     height: 1225,
-    backgroundColor: 'white',
+    backgroundColor: '#FEFDFD',
     borderTopLeftRadius: 500,
     borderTopRightRadius: 500,
     // inside

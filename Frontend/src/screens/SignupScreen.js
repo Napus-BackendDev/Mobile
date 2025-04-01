@@ -87,7 +87,7 @@ export default function SignupScreen({ navigation }) {
     };
 
   return (
-    <LinearGradient colors={['#FFF','#FFF']} style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.pageContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('TabNavigator', {screen: 'Profile'})}>
           <Ionicons name="arrow-back" size={30} color={"#3B444D"} style={styles.backButton} />
@@ -138,7 +138,7 @@ export default function SignupScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FEFDFD',
   },
   pageContainer: {
     flex:1,
@@ -213,6 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 25,
   },
   signupbuttonText: {
     color: '#FFFFFF',

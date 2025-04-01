@@ -135,12 +135,7 @@ export default function ProfileLogInedScreen({ route, navigation }) {
   };
 
   return (
-    <LinearGradient
-      colors={['#EFB6C8', '#8B87CC', '#EFB6C8']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.background}
-    >
+    <View style={ styles.background }>
       <View style={ styles.header }>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Image
@@ -276,7 +271,7 @@ export default function ProfileLogInedScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -286,6 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     fontFamily: 'JosefinSans',
+    backgroundColor: "#242049",
   },
   header: {
     flexDirection: 'row',

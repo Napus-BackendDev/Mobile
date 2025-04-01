@@ -110,12 +110,7 @@ export default function LoginScreen({ navigation }) {
 };
 
   return (
-    <LinearGradient
-    colors={['#EFB6C8', '#8B87CC','#EFB6C8']}
-    locations={[0, 0.6, 1]}
-    start={{ x: 0, y: 0.2 }}  // Top-left
-    end={{ x: 1, y: 1 }}
-    style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.pageContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color={"white"} style={styles.backButton} />
@@ -168,7 +163,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={{ 
             fontSize: 12, 
             fontWeight: '600', // Change from 600 to '600'
-            color: '#3B444D', 
+            color: '#FFFFFF', 
             fontFamily: 'JosefinSans'
           }}>
             DON'T HAVE AN ACCOUNT?
@@ -182,7 +177,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -192,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     fontFamily: 'JosefinSans',
-
+    backgroundColor: "#242049",
   },
   pageContainer: {
     flex:1,
@@ -259,8 +254,8 @@ const styles = StyleSheet.create({
   },
   loginforgot:{
     fontFamily: 'JosefinSans',
-    color:"white",
-    fontWeight: 'bold',
+    color:"#FF7575",
+    fontWeight: 600,
   },
   login: {
     backgroundColor: '#FFF',
@@ -278,7 +273,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft:10,
     marginRight:10,
-    color: '#3B444D',
+    color: '#FFFFFF',
     fontFamily: 'JosefinSans',
   },
   row: {
@@ -290,7 +285,7 @@ const styles = StyleSheet.create({
   line: {
     width: 70,
     height: 1.5,
-    backgroundColor: '#3B444C',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     position:'relative',
     padding: '0 10',
     borderRadius:1,
@@ -318,7 +313,7 @@ const styles = StyleSheet.create({
   },
   loginlinkText: {
     height: '100%',
-    color: '#FFF',
+    color: '#FF7575',
     fontWeight: 600,
     fontSize: 12,
     fontFamily: 'JosefinSans',
