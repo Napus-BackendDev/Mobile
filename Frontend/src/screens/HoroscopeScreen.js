@@ -30,7 +30,13 @@ export default function HoroscopeScreen({ navigation, route }) {
 
     // Check if card is in the middle of screen
     if ((scrollX._value === position[1]) | (scrollX._value < position[1] + 30 && scrollX._value > position[2] - 30) | (scrollX._value > position[1] - 30 && scrollX._value < position[0] + 30)) {
-      navigation.navigate('TabNavigator') // Card is in middle // Later change to Result Page
+      // Find the selected card index
+      const selectedIndex = Math.round(scrollX._value / CARD_WIDTH);
+      const selectedCard = cards[selectedIndex];
+      navigation.navigate('ResultScreen', { 
+        cardId: selectedCard.id,
+        cardTitle: selectedCard.title
+      });
     } else {
       scollViewRef.current.scrollTo({ x: position[1], animated: true }) // Scroll screen to make card is in middle
     }
@@ -78,9 +84,9 @@ export default function HoroscopeScreen({ navigation, route }) {
               extrapolate: 'clamp',
             });
             
-            const border = scrollX.interpolate({
+            const opacity = scrollX.interpolate({
               inputRange,
-              outputRange: [0, 4, 0],
+              outputRange: [0.5, 1, 0.5],
               extrapolate: 'clamp',
             });
 
@@ -98,8 +104,7 @@ export default function HoroscopeScreen({ navigation, route }) {
                       transform: [
                         { scale },
                       ],
-                      borderWidth: border,
-                      borderColor: '#D75EDD',
+                      opacity,
                     },
                   ]}
                 >
@@ -195,6 +200,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 0,
     padding: 0,
+    borderWidth: 2,
+    borderColor: '#D75EDD',
   },
   cardIndex: {
     fontSize: 24,
