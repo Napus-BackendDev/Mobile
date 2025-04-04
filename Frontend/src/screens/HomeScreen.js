@@ -122,8 +122,9 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 <View style={styles.topicContainer}>
                     <View style={styles.topic}>
-                        {timeFrame.map((topic) => (
+                        {timeFrame.map((topic, index) => (
                             <TouchableOpacity
+                                key={`timeframe-${topic}`}
                                 onPress={() => handleTopicSelect(topic)}
                                 style={styles.topicItem}
                             >
@@ -134,8 +135,9 @@ export default function HomeScreen({ navigation }) {
                         ))}
                     </View>
                     <View style={styles.topic}>
-                        {lifeAspect.map((topic) => (
+                        {lifeAspect.map((topic, index) => (
                             <TouchableOpacity
+                                key={`lifeaspect-${topic}`}
                                 onPress={() => handleTopicSelect(topic)}
                                 style={styles.topicItem}
                             >

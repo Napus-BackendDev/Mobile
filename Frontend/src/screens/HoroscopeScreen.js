@@ -25,20 +25,21 @@ export default function HoroscopeScreen({ navigation, route }) {
   
   // Event when user click card
   const handleClick = (position) => { 
-    console.log(scrollX._value);
-    console.log(position);
+    // Find the selected card index based on scroll position
+    const selectedIndex = Math.round(scrollX._value / CARD_WIDTH);
+    const selectedCard = cards[selectedIndex];
 
-    // Check if card is in the middle of screen
-    if ((scrollX._value === position[1]) | (scrollX._value < position[1] + 30 && scrollX._value > position[2] - 30) | (scrollX._value > position[1] - 30 && scrollX._value < position[0] + 30)) {
-      // Find the selected card index
-      const selectedIndex = Math.round(scrollX._value / CARD_WIDTH);
-      const selectedCard = cards[selectedIndex];
+    // Check if card is in the middle of screen (with some tolerance)
+    const isCardCentered = Math.abs(scrollX._value - (selectedIndex * CARD_WIDTH)) < 30;
+    
+    if (isCardCentered) {
       navigation.navigate('ResultScreen', { 
-        cardId: selectedCard.id,
-        cardTitle: selectedCard.title
+        fortuneId: `Card ${selectedCard.id + 1}`,  // Match the format expected by ResultScreen
+        title: title,
       });
     } else {
-      scollViewRef.current.scrollTo({ x: position[1], animated: true }) // Scroll screen to make card is in middle
+      // Scroll to center the card
+      scollViewRef.current.scrollTo({ x: selectedIndex * CARD_WIDTH, animated: true })
     }
   };
   
@@ -109,7 +110,13 @@ export default function HoroscopeScreen({ navigation, route }) {
                     },
                   ]}
                 >
-                  <Text style={styles.cardIndex}>{card.id + 1}</Text>
+                  {/* <Text style={styles.cardIndex}>{card.id + 1}</Text> */}
+                  <Image 
+                    source={{ 
+                      uri: 'https://firebasestorage.googleapis.com/v0/b/mobile-app-1840d.firebasestorage.app/o/Back_Card.png?alt=media&token=8353aa40-a9b4-4bbd-9509-b2b07721244c'
+                    }} 
+                    style={styles.cardImage} 
+                  />
                 </Animated.View>
               </TouchableOpacity>
             );
@@ -203,6 +210,11 @@ const styles = StyleSheet.create({
     padding: 0,
     borderWidth: 2,
     borderColor: '#D75EDD',
+  },
+  cardImage: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 8,
   },
   cardIndex: {
     fontSize: 24,

@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 
-// Your Firebase config (Replace with your Firebase settings)
+// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCbdk_ec2h2w5j0mAXaJHijdvISdzUKUlk",
   authDomain: "mobile-app-1840d.firebaseapp.com",
@@ -20,5 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { auth, db , getDownloadURL , ref , getStorage };
+// Export initialized instances and utilities
+export { auth, db, storage, getDownloadURL, ref };
