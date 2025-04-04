@@ -48,6 +48,7 @@ export default function HoroscopeScreen({ navigation, route }) {
       range.push((index + i) * CARD_WIDTH);
     }
     return range;
+    
   };
 
   const renderCards = () => {

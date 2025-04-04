@@ -17,6 +17,7 @@ import StoreScreen from './src/screens/StoreScreen';
 import House from './assets/Icons/House.svg';
 import Card from './assets/Icons/Square.svg';
 import Profile from './assets/Icons/User.svg';
+import ResultScreen from './src/screens/ResultScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -119,6 +120,11 @@ export default function App() {
           name='ProfileLogIned'
           component={ProfileLogInedScreen} 
           options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name='ResultScreen'
+          component={ResultScreen}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
