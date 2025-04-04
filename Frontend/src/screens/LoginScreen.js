@@ -12,7 +12,7 @@ export default function LoginScreen({ navigation }) {
           'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
     });
     
-    const [username,setUsername]=useState('');
+    
     const [gmail,setGmail]=useState('');
     const [password,setPassword]=useState('');
     
@@ -44,23 +44,13 @@ export default function LoginScreen({ navigation }) {
     
     const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
     const passwordRegex = /^[A-Za-z0-9]{8,20}$/;
     try {
 
           // Check if any field is empty
-        if (!username || !gmail || !password) {
+        if (!gmail || !password) {
           alert('Invalid Input', 'Please fill all fields');
           return;
-        }
-
-        // Validate username first
-        if (!usernameRegex.test(username)) {
-            alert(
-                'Invalid Username',
-                'Username should be 3-15 characters long and contain only letters, numbers, and underscores.'
-            );
-            return;
         }
 
         // Validate email
@@ -85,18 +75,11 @@ export default function LoginScreen({ navigation }) {
         const userDoc = await getDoc(doc(db, "User", user.uid));
         
         if (userDoc.exists()) {
-            // Check if the entered username matches the one in database
-            if (userDoc.data().username !== username) {
-                alert('Invalid Username', 'Username does not match our records');
-                return;
-            }
-            // Don't update the document if it already exists
             console.log("Login Successful!");
         } else {
             // Only create a new document if it doesn't exist
             await setDoc(doc(db, "User", user.uid), {
                 email: gmail,
-                username: username,
                 profileImg: null,
             });
             console.log("New user document created!");
@@ -116,11 +99,6 @@ export default function LoginScreen({ navigation }) {
           <Ionicons name="arrow-back" size={30} color={"white"} style={styles.backButton} />
         </TouchableOpacity>
         <Text style={styles.logintitle}>LOG IN</Text>
-
-        <View style={[styles.inputContainer, styles.shadow]}>
-          <Image source={require('../../assets/Icons/UserIcon.png')} style={styles.icon} />
-          <TextInput style={styles.input} placeholder="USERNAME" value={username} onChangeText={setUsername}/>
-        </View>
 
         <View style={[styles.inputContainer, styles.shadow]}>
           <Image source={require('../../assets/Icons/EmailIcons.png')} style={styles.mailicon} />
@@ -206,7 +184,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color:"white",
     fontWeight: 'bold',
-    marginBottom: 50,
+    marginBottom: 80,
     textAlign: 'center',
     fontFamily: 'JosefinSans',
   },
@@ -216,7 +194,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 40,
     paddingHorizontal: 10,
-    marginBottom: 30,
+    marginBottom: 40,
     backgroundColor:"#F4F8FB",
     fontFamily: 'JosefinSans',
   },
@@ -248,7 +226,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     alignSelf: 'center',
-    marginTop: -20,
+    marginTop: 8,
     marginBottom: 30,
     fontFamily: 'JosefinSans',
   },

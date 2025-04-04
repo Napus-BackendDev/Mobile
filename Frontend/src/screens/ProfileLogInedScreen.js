@@ -137,12 +137,14 @@ export default function ProfileLogInedScreen({ route, navigation }) {
   return (
     <View style={ styles.background }>
       <View style={ styles.header }>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Image
-            source={require('../../assets/img/Arrow.png')}
-            style={{ width: 23.03, height: 14 }}
-          />
-        </TouchableOpacity>
+        {!route.params?.hideBackButton && (
+            <TouchableOpacity onPress={() => navigation.navigate('TabNavigator')}>
+              <Image
+                source={require('../../assets/img/Arrow.png')}
+                style={{ width: 23.03, height: 14 }}
+              />
+            </TouchableOpacity>
+          )}
         <Text style={styles.title}>PROFILE</Text>
       </View>
 
@@ -164,6 +166,17 @@ export default function ProfileLogInedScreen({ route, navigation }) {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
+              <Image
+                source={image ? { uri: image } : require('../../assets/img/Profile_icon/Profile.png')}
+                style={{ 
+                  width: 100, 
+                  height: 100, 
+                  marginBottom: 50,
+                  borderRadius: 50, 
+                  borderWidth: 3, 
+                  borderColor: '#FF676F'
+                }}
+              />
               <Text style={styles.modalTitle}>Update Profile Picture</Text>
               <View style={styles.modalButtons}>
                 <TouchableOpacity 
