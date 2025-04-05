@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useState, useEffect } from 'react';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 //Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -14,6 +16,8 @@ import ProfileLogInedScreen from './src/screens/ProfileLogInedScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import StoreScreen from './src/screens/StoreScreen';
+import SplashIntroScreen from './src/screens/SplashIntroScreen'; 
+
 
 //Icons
 import House from './assets/Icons/House.svg';
@@ -118,10 +122,21 @@ function TabNavigator() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    JosefinSans: require('./assets/fonts/JosefinSans.ttf'),
+  });
+
+  if (!fontsLoaded) return <AppLoading />;
+  
   return (
     <AuthProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='TabNavigator'>
+        <Stack.Navigator initialRouteName='Splash'>
+        <Stack.Screen 
+        name="Splash" 
+        component={SplashIntroScreen} 
+        options={{ headerShown: false }}
+        />
           <Stack.Screen 
             name='TabNavigator' 
             component={TabNavigator} 
