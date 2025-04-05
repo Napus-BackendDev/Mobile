@@ -148,6 +148,7 @@ export default function ResultScreen({route}) {
               'Knight of Sword': 'Sword/Knight_of_Swords.png',
               'Queen of Sword': 'Sword/Queen_of_Swords.png',
               'King of Sword': 'Sword/King_of_Swords.png',
+              'The_chamberlain_of_Swords':'Sword/Page_of_Swords.png',
               
               // Coins/Pentacles (14 cards)
               'Ace of Coin': 'Coin/Ace_of_Pentacles.png',
