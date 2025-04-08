@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { ref, getDownloadURL,getStorage } from 'firebase/storage';
 import { db } from '../../firebaseConfig';
+import { saveCardHistory } from '../utils/cardHistory';
+import { getAuth } from 'firebase/auth';
 const storage = getStorage();
 export default function ResultScreen({route}) {
   const navigation = useNavigation();
@@ -17,6 +19,7 @@ export default function ResultScreen({route}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [cardData, setCardData] = useState(null);
   const handlePress = () => {
     navigation.goBack();
   };
@@ -242,6 +245,17 @@ export default function ResultScreen({route}) {
               const url = await getDownloadURL(imageRef);
               setImageUrl(url);
               console.log("Image URL fetched:", url);
+              setCardData({
+                cardName: data.Name,
+                cardImage: url,
+                timestamp: new Date().toISOString(),
+                description: {
+                  english: data.Desc_Eng,
+                  thai: data.Desc_Thai
+                }
+              });
+              
+              console.log("Card data set successfully");
             } catch (error) {
               console.error("Error fetching image:", error);
               // Set a default image URL if the specific card image isn't found
@@ -254,6 +268,7 @@ export default function ResultScreen({route}) {
           }
           // Continue without image - will use fallback
           
+          
         } else {
           setError('Fortune not found');
           console.log("No fortune found with ID:", fortuneId);
@@ -264,12 +279,19 @@ export default function ResultScreen({route}) {
       } finally {
         setLoading(false);
       }
-    };
-
-    
+    }; 
     fetchFortuneData();
   }, [fortuneId]);
-
+  useEffect(() => {
+    const saveHistory = async () => {
+      const auth = getAuth();
+      if (auth.currentUser && cardData) {
+        await saveCardHistory(auth.currentUser.uid, cardData);
+      }
+    };
+    
+    saveHistory();
+  }, [cardData]); // Changed dependency from selectedCards to cardData
 
 
   return (
@@ -306,19 +328,19 @@ const styles = StyleSheet.create({
   daily: {
     color : "#ffffff",
     fontFamily : "Josefin Sans",
-    fontSize : 40,
+    fontSize : 30,
     fontWeight : 600,
     letterSpacing : 4,
     width : 233,
     height : 40,
-    marginTop : 30,
+    marginTop : 35,
     marginLeft : 84.5, 
     textAlign : "center"
   },
 
   cardContainer: {
-    width : 244,
-    height : 420,
+    width : 240,
+    height : 400,
     backgroundColor : "#D9D9D9",
     borderRadius : 8,
     marginTop : 40,
@@ -328,7 +350,7 @@ const styles = StyleSheet.create({
   cardName : {
     color : "#ffffff",
     fontFamily : "Josefin Sans",
-    fontSize : 20,
+    fontSize : 18,
     fontWeight : 600,
     width : 157,
     height : 20,
@@ -340,7 +362,7 @@ const styles = StyleSheet.create({
   descriptionBox: {
     width: 300,
     height: 90,
-    marginTop: 29,
+    marginTop: 15,
     marginLeft: 51,
     justifyContent: "center", 
     alignItems: "center",    
@@ -349,7 +371,7 @@ const styles = StyleSheet.create({
   description: {
     color: "#ffffff",
     fontFamily: "Josefin Sans",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 400,
     textAlign: "center",
     textTransform: "uppercase",
@@ -361,7 +383,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "400",
     textAlign: "center",
-    marginTop: 40,
+    marginTop: 10,
     textTransform: "uppercase",
     opacity: 0.5, 
   },

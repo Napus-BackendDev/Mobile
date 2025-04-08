@@ -1,7 +1,7 @@
 // Update imports
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, TextInput,ScrollView } from 'react-native';
 import { useFonts } from "expo-font";
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, getDownloadURL, getStorage, uploadBytes } from 'firebase/storage';
@@ -9,11 +9,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { db } from '../../firebaseConfig';
 import { useEffect, useState } from 'react';
 import { getAuth, signOut } from "firebase/auth";
+import {getCardHistory} from '../../src/utils/cardHistory';
+
 export default function ProfileLogInedScreen({ route, navigation }) {
   const { userId } = route.params;
   const [image, setImage] = useState(null);
   const [name, setname] = useState(null);
   const [email, setemail] = useState(null);
+  const [cardHistory,setCardHistory]=useState([]);
   const [fontsLoaded] = useFonts({
       'JosefinSans': require('../../assets/fonts/JosefinSans.ttf'),
   });
@@ -31,7 +34,7 @@ export default function ProfileLogInedScreen({ route, navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [isProfilePicModalVisible, setProfilePicModalVisible] = useState(false);  // Add this line
-  
+  const [isHaveHistory, setHaveHistory] = useState(false); 
   const storage = getStorage();
   const auth = getAuth();
   useEffect(() => {
@@ -45,6 +48,9 @@ export default function ProfileLogInedScreen({ route, navigation }) {
           setname(userData.username);
           setemail(userData.email);
           
+          if (userData.cardHistory) {
+            setCardHistory(userData.cardHistory);
+          }
           // Check if profileImg exists and is not null
           if (userData.profileImg) {
             try {
@@ -59,6 +65,10 @@ export default function ProfileLogInedScreen({ route, navigation }) {
             }
           }
         }
+        const history =await getCardHistory(userId);
+        setCardHistory(history);
+        console.log("Card history:", history); // Log the card history to check i
+
       } catch (error) {
         console.error("Error Fetching User Data: ", error);
       }
@@ -255,17 +265,57 @@ export default function ProfileLogInedScreen({ route, navigation }) {
           {/* History Header */}
           <View style={{ flexDirection: 'row', marginTop: 15, width: 300 , justifyContent: 'space-between' }}>
             <Text style={{fontSize: 10 , color: "#FF676F" , fontWeight: 700}}>TAROT HISTORY</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>setHaveHistory(true)}>
               <Text style={{fontSize: 10 , color: "black" , fontWeight: 500}}>SEE ALL</Text>
             </TouchableOpacity>
           </View>
-
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isHaveHistory}
+          onRequestClose={() => setHaveHistory(false)}>
+          
+            <View style={styles.historyModalOverlay}>
+              <View style={styles.historyContainer}>
+                <Text style={styles.historyTitle}>TAROT HISTORY</Text>
+                <ScrollView style={styles.scrollView}>
+                  <View style={styles.cardContainer}>
+                    {cardHistory.length > 0 ? (
+                      cardHistory.map((item, index) => (
+                        <Image 
+                          key={index}
+                          source={{ uri: item.cardImage }} // Updated to match the correct data structure
+                          style={{width: 80, height: 138}}
+                        />
+                      ))
+                    ) : (
+                      <Text>No reading history yet</Text>
+                    )}
+                  </View>
+                </ScrollView>
+                <TouchableOpacity 
+                  style={styles.backButton}
+                  onPress={() => setHaveHistory(false)}>
+                  <Text style={styles.backButtonText}>Back</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           {/* History Card */}
-          <View style={{ flexDirection: 'row', marginTop: 15, width: 300 , height: 138, justifyContent: 'space-between' }}>
-            <Image source={require('../../assets/Card/Card1.png')} style={{width: 80,height: 138}}/>
-            <Image source={require('../../assets/Card/Card2.png')} style={{width: 80,height: 138}}/>
-            <Image source={require('../../assets/Card/Card3.png')} style={{width: 80,height: 138}}/>
+          <View style={styles.cardContainer}>
+            {cardHistory && cardHistory.length > 0 ? (
+              cardHistory.slice(0, 3).map((item, index) => (
+                <Image 
+                  key={index}
+                  source={{ uri: item.cardImage }}
+                  style={{width: 80, height: 138, marginRight: 10}}
+                />
+              ))
+            ) : (
+              <Text style={{fontSize: 12, color: "black"}}>No reading history yet</Text>
+            )}
           </View>
+          
         </View>
 
         {/* Profile Buttons */}
@@ -299,7 +349,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: '6.5%',
+    marginLeft: '8%',
   },
   title: {
     marginTop: '15%',
@@ -369,6 +419,53 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  historyModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  historyContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    width: '80%',
+    maxHeight: '80%',
+    alignItems: 'center',
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 15, 
+    width: 300 , 
+    height: 138, 
+    justifyContent: 'flex-start'
+  },
+  scrollView: {
+    width: '100%',
+    maxHeight: '80%',
+  },
+  historyTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#FF676F',
+    fontFamily: 'JosefinSans',
+  },
+  backButton: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: '#FF676F',
+    borderRadius: 20,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'JosefinSans',
   },
   modalContent: {
     backgroundColor: 'white',
